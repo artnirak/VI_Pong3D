@@ -24,7 +24,7 @@ var paddle1DirY = 0, paddle1DirZ = 0, paddle2DirY = 0, paddle2DirZ = 0, paddleSp
 
 // ball variables
 var ball, paddle1, paddle2;
-var ballDirX = 1, ballDirY = 1, ballDirZ = 0.0001, ballSpeed = 1;
+var ballDirX = 1, ballDirY = 1, ballDirZ = 0, ballSpeed = 1;
 
 // game-related variables
 var score1 = 0, score2 = 0;
@@ -573,7 +573,11 @@ function paddlePhysics()
                     {
                         if(ballDirZ<0)
                         {
-                            ballDirZ = -ballDirZ + ( -ballDirZ * angle) + 1;
+                            ballDirZ = -ballDirZ;
+                        }
+                        else
+                        {
+                            ballDirZ = 1 + angle; 
                         }
 
 
