@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="71c53146-445f-4b90-b318-7db6c2d3e8f2" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Scripts/game.js" afterPath="$PROJECT_DIR$/Scripts/game.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Scripts/keyboard.js" afterPath="$PROJECT_DIR$/Scripts/keyboard.js" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -27,8 +26,8 @@
       <file leaf-file-name="game.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Scripts/game.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1228">
-              <caret line="616" column="48" lean-forward="true" selection-start-line="616" selection-start-column="48" selection-end-line="616" selection-end-column="48" />
+            <state relative-caret-position="388">
+              <caret line="576" column="25" lean-forward="false" selection-start-line="576" selection-start-column="25" selection-end-line="576" selection-end-column="25" />
               <folding />
             </state>
           </provider>
@@ -76,7 +75,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="260" />
     <option name="y" value="40" />
     <option name="width" value="1400" />
@@ -231,7 +230,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1938" height="1098" extended-state="7" />
+    <frame x="-9" y="-9" width="1938" height="1098" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -290,8 +289,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Scripts/game.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1228">
-          <caret line="616" column="48" lean-forward="true" selection-start-line="616" selection-start-column="48" selection-end-line="616" selection-end-column="48" />
+        <state relative-caret-position="388">
+          <caret line="576" column="25" lean-forward="false" selection-start-line="576" selection-start-column="25" selection-end-line="576" selection-end-column="25" />
           <folding />
         </state>
       </provider>

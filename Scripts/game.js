@@ -568,14 +568,14 @@ function paddlePhysics()
                 if (ballDirX < 0)
                 {
                     ballDirX = -ballDirX;
-                    if (paddle1.rotation.y == 0 && paddle1.rotation.z == 0)
-                    {
-
-                    }
                     //if paddle is turned up
                     if (paddle1.rotation.y < 0 && ball.position.z > radius)
                     {
-                        ballDirZ = -ballDirZ + ( -ballDirZ * angle) +1;
+                        if(ballDirZ<0)
+                        {
+                            ballDirZ = -ballDirZ + ( -ballDirZ * angle) + 1;
+                        }
+
 
                     }
                     //if paddle is turned down
