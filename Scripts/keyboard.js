@@ -4,11 +4,11 @@ window.addEventListener('keydown', function(event) { Key.onKeydown(event); }, fa
 var Key = {
   _pressed: {},
 
+  SHIFT: 16,
   A: 65,
   W: 87,
   D: 68,
   S: 83,
-  SPACE: 32,
   
   isDown: function(keyCode) {
     return this._pressed[keyCode];

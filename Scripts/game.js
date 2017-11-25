@@ -11,17 +11,20 @@
 
 // scene object variables
 var renderer, scene, camera, pointLight, spotLight;
+var radius = 5;
+//rotation and collision angle
+var angle = 0.2;
 
 // field variables
-var fieldWidth = 400, fieldLength = 200, fieldHeight = 300;
+var fieldWidth = 400, fieldLength = 200, fieldHeight = 200;
 
 // paddle variables
 var paddleWidth, paddleHeight, paddleDepth, paddleQuality;
-var paddle1DirY = 0, paddle1DirZ = 0, paddle2DirY = 0, paddleSpeed = 10;
+var paddle1DirY = 0, paddle1DirZ = 0, paddle2DirY = 0, paddle2DirZ = 0, paddleSpeed = 5;
 
 // ball variables
 var ball, paddle1, paddle2;
-var ballDirX = 1, ballDirY = 1, ballSpeed = 3;
+var ballDirX = 1, ballDirY = 1, ballDirZ = 0.0001, ballSpeed = 1;
 
 // game-related variables
 var score1 = 0, score2 = 0;
@@ -29,7 +32,7 @@ var score1 = 0, score2 = 0;
 var maxScore = 7;
 
 // set opponent reflexes (0 - easiest, 1 - hardest)
-var difficulty = 0.2;
+var difficulty = 0.5;
 
 // ------------------------------------- //
 // ------- GAME FUNCTIONS -------------- //
@@ -82,7 +85,7 @@ function createScene()
 	
 	// set a default position for the camera
 	// not doing this somehow messes up shadow rendering
-	camera.position.z = 500;
+	camera.position.z = 100;
 	
 	// start the renderer
 	renderer.setSize(WIDTH, HEIGHT);
@@ -188,13 +191,13 @@ function createScene()
 	ball.position.x = 0;
 	ball.position.y = 0;
 	// set ball above the table surface
-	ball.position.z = radius;
+	ball.position.z = radius*10;
 	ball.receiveShadow = true;
     ball.castShadow = true;
 	
 	// // set up the paddle vars
 	paddleWidth = 5;
-	paddleHeight = 25;
+	paddleHeight = 30;
 	paddleDepth = 20;
 	paddleQuality = 1;
 		
@@ -213,7 +216,7 @@ function createScene()
 	// // add the padle to the scene
 	scene.add(paddle1);
 	paddle1.receiveShadow = true;
-    paddle1.castShadow = false;
+    paddle1.castShadow = true;
 	
 	paddle2 = new THREE.Mesh(
 
@@ -323,24 +326,44 @@ function ballPhysics()
 		matchScoreCheck();	
 	}
 	
-	// if ball goes off the top side (side of table)
+	// if ball goes to the side (side of table)
 	if (ball.position.y <= -fieldLength/2)
 	{
 		ballDirY = -ballDirY;
 	}	
-	// if ball goes off the bottom side (side of table)
+	// if ball goes to the side (side of table)
 	if (ball.position.y >= fieldLength/2)
 	{
 		ballDirY = -ballDirY;
 	}
+
+	if (ball.position.z >= fieldHeight * 0.45 && ballDirZ > 0 )
+	{
+        ballDirZ = -ballDirZ;
+	}
+
+	if (ball.position.z <= 5 && ballDirZ < 0)
+	{
+	    ballDirZ = -ballDirZ;
+	}
 	
 	// update ball position over time
+	ball.position.z += ballDirZ * ballSpeed;
 	ball.position.x += ballDirX * ballSpeed;
 	ball.position.y += ballDirY * ballSpeed;
 	
 	// limit ball's y-speed to 2x the x-speed
 	// this is so the ball doesn't speed from left to right super fast
 	// keeps game playable for humans
+	if (ballDirZ > ballSpeed * 2)
+    {
+    	ballDirZ = ballSpeed * 2;
+    }
+    else if (ballDirZ < -ballSpeed * 2)
+    {
+    	ballDirZ = -ballSpeed * 2;
+    }
+
 	if (ballDirY > ballSpeed * 2)
 	{
 		ballDirY = ballSpeed * 2;
@@ -356,7 +379,28 @@ function opponentPaddleMovement()
 {
 	// Lerp towards the ball on the y plane
 	paddle2DirY = (ball.position.y - paddle2.position.y) * difficulty;
-	
+	paddle2DirZ = (ball.position.z+radius - paddle2.position.z) * difficulty;
+
+	// in case the Lerp function produces a value above max paddle speed, we clamp it
+	if (Math.abs(paddle2DirZ) <= paddleSpeed)
+	{
+ 		paddle2.position.z += paddle2DirZ;
+	}
+	// if the lerp value is too high, we have to limit speed to paddleSpeed
+	else
+	{
+		// if paddle is lerping in +ve direction
+		if (paddle2DirZ > paddleSpeed)
+		{
+			paddle2.position.z += paddleSpeed;
+		}
+		// if paddle is lerping in -ve direction
+		else if (paddle2DirZ < -paddleSpeed)
+		{
+			paddle2.position.z -= paddleSpeed;
+		}
+	}
+
 	// in case the Lerp function produces a value above max paddle speed, we clamp it
 	if (Math.abs(paddle2DirY) <= paddleSpeed)
 	{	
@@ -376,11 +420,7 @@ function opponentPaddleMovement()
 			paddle2.position.y -= paddleSpeed;
 		}
 	}
-	// We lerp the scale back to 1
-	// this is done because we stretch the paddle at some points
-	// stretching is done when paddle touches side of table and when paddle hits ball
-	// by doing this here, we ensure paddle always comes back to default size
-	paddle2.scale.y += (1 - paddle2.scale.y) * 0.2;	
+
 }
 
 
@@ -388,14 +428,17 @@ function opponentPaddleMovement()
 function playerPaddleMovement()
 {
 	// move left
-	
 	if (Key.isDown(Key.A))		
 	{
 		
 		paddle1.rotation.z = 0.2;
 		// if paddle is not touching the side of table
 		// we move
-		if (paddle1.position.y < fieldLength * 0.45)
+		if (Key.isDown(Key.SHIFT))
+		{
+		    paddle1DirY = 0;
+		}
+		else if (paddle1.position.y < fieldLength * 0.45)
 		{
 			paddle1DirY = paddleSpeed * 0.5;
 			
@@ -414,7 +457,11 @@ function playerPaddleMovement()
 		paddle1.rotation.z = -0.2;
 		// if paddle is not touching the side of table
 		// we move
-		if (paddle1.position.y > -fieldLength * 0.45)
+		if (Key.isDown(Key.SHIFT))
+        {
+            paddle1DirY = 0;
+        }
+		else if (paddle1.position.y > -fieldLength * 0.45)
 		{
 			paddle1DirY = -paddleSpeed * 0.5;	
 		}
@@ -429,8 +476,12 @@ function playerPaddleMovement()
 	if (Key.isDown(Key.W))
 	{
 		paddle1.rotation.y = -0.2;
+		if (Key.isDown(Key.SHIFT))
+        {
+            paddle1DirZ = 0;
+        }
 		
-		if (paddle1.position.z < fieldHeight * 0.45)
+		else if (paddle1.position.z < fieldHeight * 0.45)
 		{
 			paddle1DirZ = paddleSpeed * 0.5;
 		}
@@ -445,8 +496,11 @@ function playerPaddleMovement()
 	if (Key.isDown(Key.S))
 	{
 		paddle1.rotation.y = 0.2;
-		
-		if (paddle1.position.z > 11.45)
+		if (Key.isDown(Key.SHIFT))
+        {
+            paddle1DirZ = 0;
+        }
+		else if (paddle1.position.z > 11.45)
 		{	
 			paddle1DirZ = -paddleSpeed * 0.5;
 		}
@@ -483,13 +537,14 @@ function cameraPhysics()
 	// move to behind the player's paddle
 	camera.position.x = paddle1.position.x - 100;
 	camera.position.y += (paddle1.position.y - camera.position.y) * 0.05;
-	camera.position.z = paddle1.position.z + 100 + 0.04;
+	camera.position.z = paddle1.position.z + 40 + 0.04;
 	
 	// rotate to face towards the opponent
 	camera.rotation.x = -0.01 * Math.PI/180;
 	camera.rotation.y = -60 * Math.PI/180;
 	camera.rotation.z = -90 * Math.PI/180;
 }
+
 
 // Handles paddle collision logic
 function paddlePhysics()
@@ -506,20 +561,38 @@ function paddlePhysics()
 		if (ball.position.y <= paddle1.position.y + paddleHeight/2
 		&&  ball.position.y >= paddle1.position.y - paddleHeight/2)
 		{
-			// and if ball is travelling towards player (-ve direction)
-			if (ballDirX < 0)
-			{
-				// switch direction of ball travel to create bounce
-				ballDirX = -ballDirX;
-				// we impact ball angle when hitting it
-				// this is not realistic physics, just spices up the gameplay
-				// allows you to 'slice' the ball to beat the opponent
-				ballDirY -= paddle1DirY * 0.7;
-			}
+		    if (ball.position.z <= paddle1.position.z + paddleDepth/2
+		    && ball.position.z >= paddle1.position.z - paddleHeight/2)
+		    {
+		        // and if ball is travelling towards player (-ve direction)
+                if (ballDirX < 0)
+                {
+                    ballDirX = -ballDirX;
+                    if (paddle1.rotation.y == 0 && paddle1.rotation.z == 0)
+                    {
+
+                    }
+                    //if paddle is turned up
+                    if (paddle1.rotation.y < 0 && ball.position.z > radius)
+                    {
+                        ballDirZ = -ballDirZ + ( -ballDirZ * angle) +1;
+
+                    }
+                    //if paddle is turned down
+                    if (paddle1.rotation.y > 0 && ball.position.z > radius)
+                    {
+                        //if (ball)
+                    }
+
+
+
+                }
+		    }
+
 		}
 	}
 	
-	// OPPONENT PADDLE LOGIC	
+	// OPPONENT BALL LOGIC
 	
 	// if ball is aligned with paddle2 on x plane
 	// remember the position is the CENTER of the object
@@ -547,12 +620,23 @@ function paddlePhysics()
 	}
 }
 
+function wait(ms){
+   var start = new Date().getTime();
+   var end = start;
+   while(end < start + ms) {
+     end = new Date().getTime();
+  }
+}
+
 function resetBall(loser)
 {
 	// position the ball in the center of the table
 	ball.position.x = 0;
 	ball.position.y = 0;
-	
+	ball.position.z = 5;
+    ballDirZ = 0.0001
+
+	wait(1000);
 	// if player lost the last point, we send the ball to opponent
 	if (loser == 1)
 	{
@@ -568,7 +652,6 @@ function resetBall(loser)
 	ballDirY = 1;
 }
 
-var bounceTime = 0;
 // checks if either player or opponent has reached 7 points
 function matchScoreCheck()
 {
