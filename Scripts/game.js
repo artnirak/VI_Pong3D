@@ -633,7 +633,7 @@ function resetBall(loser)
 	// position the ball in the center of the table
 	ball.position.x = 0;
 	ball.position.y = 0;
-	ball.position.z = 5;
+	ball.position.z = radius*10;
     ballDirZ = 0.0001
 
 	wait(1000);
