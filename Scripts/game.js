@@ -328,6 +328,59 @@ function createScene()
 	renderer.shadowMapEnabled = false;
 }
 
+//////////////settings/////////
+var movementSpeed = 50;
+var totalObjects = 50;
+var objectSize = 5;
+var sizeRandomness = 50;
+var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
+/////////////////////////////////
+var dirs = [];
+var parts = [];
+
+function ExplodeAnimation(x,y,z)
+{
+  var geometry = new THREE.Geometry();
+
+  for (i = 0; i < totalObjects; i ++)
+  {
+    var vertex = new THREE.Vector3();
+    vertex.x = x;
+    vertex.y = y;
+    vertex.z = z;
+
+    geometry.vertices.push( vertex );
+    dirs.push({x:(Math.random() * movementSpeed)-(movementSpeed/2),y:(Math.random() * movementSpeed)-(movementSpeed/2),z:(Math.random() * movementSpeed)-(movementSpeed/2)});
+  }
+  var material = new THREE.ParticleBasicMaterial( { size: objectSize,  color: colors[Math.round(Math.random() * colors.length)] });
+  var particles = new THREE.ParticleSystem( geometry, material );
+
+  this.object = particles;
+  this.status = true;
+
+  this.xDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+  this.yDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+  this.zDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+
+  scene.add( this.object  );
+
+  this.update = function(){
+    if (this.status == true){
+      var pCount = totalObjects;
+      while(pCount--) {
+        var particle =  this.object.geometry.vertices[pCount]
+        particle.y += dirs[pCount].y;
+        particle.x += dirs[pCount].x;
+        particle.z += dirs[pCount].z;
+      }
+      this.object.geometry.verticesNeedUpdate = true;
+    }
+  }
+
+}
+
+parts.push(new ExplodeAnimation(0, 0));
+
 function draw()
 {
 	// draw THREE.JS scene
@@ -340,6 +393,10 @@ function draw()
 	cameraPhysics();
 	playerPaddleMovement();
 	opponentPaddleMovement();
+    var pCount = parts.length;
+    while(pCount--) {
+        parts[pCount].update();
+    }
 }
 
 function ballPhysics()
@@ -371,21 +428,25 @@ function ballPhysics()
 	// if ball goes to the side (side of table)
 	if (ball.position.y-radius == -fieldLength/2)
 	{
+	    parts.push(new ExplodeAnimation(ball.position.x, ball.position.y,ball.position.z));
 		ballDirY = -ballDirY;
 	}
 	// if ball goes to the side (side of table)
 	if (ball.position.y+radius == fieldLength/2)
 	{
+	    parts.push(new ExplodeAnimation(ball.position.x, ball.position.y, ball.position.z));
 		ballDirY = -ballDirY;
 	}
 
 	if (ball.position.z >= fieldHeight * 0.45 && ballDirZ > 0 )
 	{
+		parts.push(new ExplodeAnimation(ball.position.x, ball.position.y, ball.position.z));
         ballDirZ = -ballDirZ;
 	}
 
 	if (ball.position.z <= 5 && ballDirZ < 0)
 	{
+	    parts.push(new ExplodeAnimation(ball.position.x, ball.position.y, ball.position.z));
 	    ballDirZ = -ballDirZ;
 	}
 
@@ -534,7 +595,6 @@ function playerPaddleMovement()
 
 
 	}
-
 	//move down
 	if (Key.isDown(Key.S))
 	{
@@ -591,6 +651,8 @@ function cameraPhysics()
 }
 
 
+
+
 // Handles paddle collision logic
 function paddlePhysics()
 {
@@ -599,15 +661,15 @@ function paddlePhysics()
 	// if ball is aligned with paddle1 on x plane
 	// remember the position is the CENTER of the object
 	// we only check between the front and the middle of the paddle (one-way collision)
-	if (ball.position.x <= paddle1.position.x + paddleWidth
-	&&  ball.position.x >= paddle1.position.x)
+	if (ball.position.x+radius <= paddle1.position.x + paddleWidth
+	&&  ball.position.x+radius >= paddle1.position.x)
 	{
 		// and if ball is aligned with paddle1 on y plane
-		if (ball.position.y <= paddle1.position.y + paddleHeight/2
-		&&  ball.position.y >= paddle1.position.y - paddleHeight/2)
+		if (ball.position.y+radius <= paddle1.position.y + paddleHeight/2
+		&&  ball.position.y+radius >= paddle1.position.y - paddleHeight/2)
 		{
-		    if (ball.position.z <= paddle1.position.z + paddleDepth/2
-		    && ball.position.z >= paddle1.position.z - paddleHeight/2)
+		    if (ball.position.z+radius <= paddle1.position.z + paddleDepth/2
+		    && ball.position.z+radius >= paddle1.position.z - paddleHeight/2)
 		    {
 		        // and if ball is travelling towards player (-ve direction)
                 if (ballDirX < 0)
@@ -663,9 +725,6 @@ function paddlePhysics()
                         }
 
                     }
-
-
-
                 }
 		    }
 
