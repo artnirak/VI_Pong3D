@@ -428,25 +428,21 @@ function ballPhysics()
 	// if ball goes to the side (side of table)
 	if (ball.position.y-radius == -fieldLength/2)
 	{
-	    parts.push(new ExplodeAnimation(ball.position.x, ball.position.y,ball.position.z));
 		ballDirY = -ballDirY;
 	}
 	// if ball goes to the side (side of table)
 	if (ball.position.y+radius == fieldLength/2)
 	{
-	    parts.push(new ExplodeAnimation(ball.position.x, ball.position.y, ball.position.z));
 		ballDirY = -ballDirY;
 	}
 
 	if (ball.position.z >= fieldHeight * 0.45 && ballDirZ > 0 )
 	{
-		parts.push(new ExplodeAnimation(ball.position.x, ball.position.y, ball.position.z));
         ballDirZ = -ballDirZ;
 	}
 
 	if (ball.position.z <= 5 && ballDirZ < 0)
 	{
-	    parts.push(new ExplodeAnimation(ball.position.x, ball.position.y, ball.position.z));
 	    ballDirZ = -ballDirZ;
 	}
 
@@ -675,6 +671,7 @@ function paddlePhysics()
                 if (ballDirX < 0)
                 {
                     ballDirX = -ballDirX;
+                    parts.push(new ExplodeAnimation(ball.position.x, ball.position.y,ball.position.z));
                     //if paddle is turned up and higher than the table ground
                     if (paddle1.rotation.y < 0 && ball.position.z > radius)
                     {
@@ -746,6 +743,7 @@ function paddlePhysics()
 			// and if ball is travelling towards opponent (+ve direction)
 			if (ballDirX > 0)
 			{
+			    parts.push(new ExplodeAnimation(ball.position.x, ball.position.y,ball.position.z));
 				// stretch the paddle to indicate a hit
 				//paddle2.scale.y = 15;
 				// switch direction of ball travel to create bounce
