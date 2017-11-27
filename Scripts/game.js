@@ -1,10 +1,4 @@
 
-// --------------------------------------------- //
-// ------- 3D PONG built with Three.JS --------- //
-// -------- Created by Nikhil Suresh ----------- //
-// -------- Three.JS is by Mr. doob  ----------- //
-// --------------------------------------------- //
-
 // ------------------------------------- //
 // ------- GLOBAL VARIABLES ------------ //
 // ------------------------------------- //
@@ -42,14 +36,14 @@ function setup()
 {
 	// update the board to reflect the max score for match win
 	document.getElementById("winnerBoard").innerHTML = "First to " + maxScore + " wins!";
-	
+
 	// now reset player and opponent scores
 	score1 = 0;
 	score2 = 0;
-	
-	// set up all the 3D objects in the scene	
+
+	// set up all the 3D objects in the scene
 	createScene();
-	
+
 	// and let's get cracking!
 	draw();
 }
@@ -59,7 +53,7 @@ function createScene()
 	// set the scene size
 	var WIDTH = 1280,
 	  HEIGHT = 720;
-	
+
 	// set some camera attributes
 	var VIEW_ANGLE = 80,
 	  ASPECT = WIDTH / HEIGHT,
@@ -82,22 +76,22 @@ function createScene()
 
 	// add the camera to the scene
 	scene.add(camera);
-	
+
 	// set a default position for the camera
 	// not doing this somehow messes up shadow rendering
-	camera.position.z = 100;
-	
+	camera.position.z = 0;
+
 	// start the renderer
 	renderer.setSize(WIDTH, HEIGHT);
 
 	// attach the render-supplied DOM element
 	c.appendChild(renderer.domElement);
 
-	// set up the playing surface plane 
+	// set up the playing surface plane
 	var planeWidth = fieldWidth,
 		PlaneLength = fieldLength,
 		planeQuality = 50;
-		
+
 	// create the paddle1's material
 	var paddle1Material =
 	  new THREE.MeshLambertMaterial(
@@ -112,17 +106,19 @@ function createScene()
 		{
 		  color: 0xFF4045
 		});
-	// create the plane's material	
+	/*
+	// create the plane's material
 	var planeMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
 		  color: 0x4BD121
-		});
+		});*/
+
 	// create the table's material
-	var tableMaterial =
+	var barrierMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: 0x111111
+		  color: 0x5D5B22
 		});
 
 	// create the ground's material
@@ -131,8 +127,8 @@ function createScene()
 		{
 		  color: 0x888888
 		});
-		
-		
+
+    /*
 	// create the playing surface plane
 	var plane = new THREE.Mesh(
 
@@ -143,38 +139,85 @@ function createScene()
 		planeQuality),
 
 	  planeMaterial);
-	  
+
 	scene.add(plane);
-	plane.receiveShadow = true;	
-	
-	var table = new THREE.Mesh(
+	plane.receiveShadow = true;*/
+
+	var bottomBarrier = new THREE.Mesh(
 
 	  new THREE.CubeGeometry(
-		planeWidth * 1.05,	// this creates the feel of a billiards table, with a lining
+		planeWidth * 1.05,
 		PlaneLength * 1.03,
-		100,				// an arbitrary depth, the camera can't see much of it anyway
+		10,
 		planeQuality,
 		planeQuality,
 		1),
 
-	  tableMaterial);
-	table.position.z = -51;	// we sink the table into the ground by 50 units. The extra 1 is so the plane can be seen
-	scene.add(table);
-	table.receiveShadow = true;	
-		
+	  barrierMaterial);
+	bottomBarrier.position.z = -5;
+	scene.add(bottomBarrier);
+	bottomBarrier.receiveShadow = true;
+
+    var upperBarrier = new THREE.Mesh(
+
+        new THREE.CubeGeometry(
+            planeWidth * 1.05,
+            PlaneLength * 1.03,
+            10,
+            planeQuality,
+            planeQuality,
+            1),
+
+        barrierMaterial);
+    upperBarrier.position.z = 105;
+    scene.add(upperBarrier);
+    upperBarrier.receiveShadow = true;
+
+    var leftBarrier = new THREE.Mesh(
+
+        new THREE.CubeGeometry(
+            planeWidth * 1.05,
+            10,
+            100 + 20,
+            planeQuality,
+            planeQuality,
+            1),
+
+        barrierMaterial);
+    leftBarrier.position.y = 107;
+    leftBarrier.position.z = 50;
+    scene.add(leftBarrier);
+    leftBarrier.receiveShadow = true;
+
+    var rightBarrier = new THREE.Mesh(
+
+        new THREE.CubeGeometry(
+            planeWidth * 1.05,
+            10,
+            100 + 20,
+            planeQuality,
+            planeQuality,
+            1),
+
+        barrierMaterial);
+    rightBarrier.position.y = -107;
+    rightBarrier.position.z = 50;
+    scene.add(rightBarrier);
+    rightBarrier.receiveShadow = true;
+
 	// // set up the sphere vars
 	// lower 'segment' and 'ring' values will increase performance
 	var radius = 5,
 		segments = 6,
 		rings = 6;
-		
+
 	// // create the sphere's material
 	var sphereMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
 		  color: 0xD43001
 		});
-		
+
 	// Create a ball with sphere geometry
 	ball = new THREE.Mesh(
 
@@ -187,20 +230,20 @@ function createScene()
 
 	// // add the sphere to the scene
 	scene.add(ball);
-	
+
 	ball.position.x = 0;
 	ball.position.y = 0;
 	// set ball above the table surface
 	ball.position.z = radius*10;
 	ball.receiveShadow = true;
     ball.castShadow = true;
-	
+
 	// // set up the paddle vars
 	paddleWidth = 5;
 	paddleHeight = 30;
 	paddleDepth = 20;
 	paddleQuality = 1;
-		
+
 	paddle1 = new THREE.Mesh(
 
 	  new THREE.CubeGeometry(
@@ -217,7 +260,7 @@ function createScene()
 	scene.add(paddle1);
 	paddle1.receiveShadow = true;
     paddle1.castShadow = true;
-	
+
 	paddle2 = new THREE.Mesh(
 
 	  new THREE.CubeGeometry(
@@ -228,39 +271,39 @@ function createScene()
 		paddleQuality,
 		paddleQuality),
 	  paddle2Material);
-	  
+
 	// // add the padle to the scene
 	scene.add(paddle2);
 	paddle2.receiveShadow = true;
-    paddle2.castShadow = true;	
-	
+    paddle2.castShadow = true;
+
 	// set paddles on each side of the table
 	paddle1.position.x = -fieldWidth/2 + paddleWidth;
 	paddle2.position.x = fieldWidth/2 - paddleWidth;
-	
+
 	// lift paddles over playing surface
 	paddle1.position.z = paddleDepth;
 	paddle2.position.z = paddleDepth;
-		
-	
+
+
 	// finally we finish by adding a ground plane
 	// to show off pretty shadows
 	var ground = new THREE.Mesh(
 
-	  new THREE.CubeGeometry( 
-	  1000, 
-	  1000, 
-	  3, 
-	  1, 
+	  new THREE.CubeGeometry(
+	  1000,
+	  1000,
+	  3,
+	  1,
 	  1,
 	  1 ),
 
 	  groundMaterial);
     // set ground to arbitrary z position to best show off shadowing
 	ground.position.z = -132;
-	ground.receiveShadow = true;	
-	scene.add(ground);		
-		
+	ground.receiveShadow = true;
+	scene.add(ground);
+
 	// // create a point light
 	pointLight =
 	  new THREE.PointLight(0xF8D898);
@@ -273,26 +316,26 @@ function createScene()
 	pointLight.distance = 10000;
 	// add to the scene
 	scene.add(pointLight);
-		
+
 	// add a spot light
 	// this is important for casting shadows
     spotLight = new THREE.SpotLight(0xF8D898);
     spotLight.position.set(0, 0, 460);
-    spotLight.intensity = 1.5;
+    spotLight.intensity = 2.5;
     spotLight.castShadow = true;
     scene.add(spotLight);
-	
+
 	// MAGIC SHADOW CREATOR DELUXE EDITION with Lights PackTM DLC
-	renderer.shadowMapEnabled = true;		
+	renderer.shadowMapEnabled = true;
 }
 
 function draw()
-{	
+{
 	// draw THREE.JS scene
 	renderer.render(scene, camera);
 	// loop draw function call
 	requestAnimationFrame(draw);
-	
+
 	ballPhysics();
 	paddlePhysics();
 	cameraPhysics();
@@ -304,33 +347,33 @@ function ballPhysics()
 {
 	// if ball goes off the 'left' side (Player's side)
 	if (ball.position.x <= -fieldWidth/2)
-	{	
+	{
 		// CPU scores
 		score2++;
 		// update scoreboard HTML
 		document.getElementById("scores").innerHTML = score1 + "-" + score2;
 		// reset ball to center
 		resetBall(2);
-		matchScoreCheck();	
+		matchScoreCheck();
 	}
-	
+
 	// if ball goes off the 'right' side (CPU's side)
 	if (ball.position.x >= fieldWidth/2)
-	{	
+	{
 		// Player scores
 		score1++;
 		// update scoreboard HTML
 		document.getElementById("scores").innerHTML = score1 + "-" + score2;
 		// reset ball to center
 		resetBall(1);
-		matchScoreCheck();	
+		matchScoreCheck();
 	}
-	
+
 	// if ball goes to the side (side of table)
 	if (ball.position.y <= -fieldLength/2)
 	{
 		ballDirY = -ballDirY;
-	}	
+	}
 	// if ball goes to the side (side of table)
 	if (ball.position.y >= fieldLength/2)
 	{
@@ -346,12 +389,12 @@ function ballPhysics()
 	{
 	    ballDirZ = -ballDirZ;
 	}
-	
+
 	// update ball position over time
 	ball.position.z += ballDirZ * ballSpeed;
 	ball.position.x += ballDirX * ballSpeed;
 	ball.position.y += ballDirY * ballSpeed;
-	
+
 	// limit ball's y-speed to 2x the x-speed
 	// this is so the ball doesn't speed from left to right super fast
 	// keeps game playable for humans
@@ -403,7 +446,7 @@ function opponentPaddleMovement()
 
 	// in case the Lerp function produces a value above max paddle speed, we clamp it
 	if (Math.abs(paddle2DirY) <= paddleSpeed)
-	{	
+	{
 		paddle2.position.y += paddle2DirY;
 	}
 	// if the lerp value is too high, we have to limit speed to paddleSpeed
@@ -428,9 +471,9 @@ function opponentPaddleMovement()
 function playerPaddleMovement()
 {
 	// move left
-	if (Key.isDown(Key.A))		
+	if (Key.isDown(Key.A))
 	{
-		
+
 		paddle1.rotation.z = 0.2;
 		// if paddle is not touching the side of table
 		// we move
@@ -441,7 +484,7 @@ function playerPaddleMovement()
 		else if (paddle1.position.y < fieldLength * 0.45)
 		{
 			paddle1DirY = paddleSpeed * 0.5;
-			
+
 		}
 		// else we don't move and stretch the paddle
 		// to indicate we can't move
@@ -463,7 +506,7 @@ function playerPaddleMovement()
         }
 		else if (paddle1.position.y > -fieldLength * 0.45)
 		{
-			paddle1DirY = -paddleSpeed * 0.5;	
+			paddle1DirY = -paddleSpeed * 0.5;
 		}
 		// else we don't move and stretch the paddle
 		// to indicate we can't move
@@ -480,7 +523,7 @@ function playerPaddleMovement()
         {
             paddle1DirZ = 0;
         }
-		
+
 		else if (paddle1.position.z < fieldHeight * 0.45)
 		{
 			paddle1DirZ = paddleSpeed * 0.5;
@@ -489,9 +532,10 @@ function playerPaddleMovement()
 		{
 			paddle1DirZ = 0;
 		}
-		
-		
+
+
 	}
+
 	//move down
 	if (Key.isDown(Key.S))
 	{
@@ -501,15 +545,15 @@ function playerPaddleMovement()
             paddle1DirZ = 0;
         }
 		else if (paddle1.position.z > 11.45)
-		{	
+		{
 			paddle1DirZ = -paddleSpeed * 0.5;
 		}
 		else
 		{
 			paddle1DirZ = 0;
 		}
-		
 	}
+
 
 	if(!Key.isDown(Key.A) && !Key.isDown(Key.D))
 	{
@@ -521,28 +565,30 @@ function playerPaddleMovement()
 		paddle1DirZ = 0;
 		paddle1.rotation.y = 0;
 	}
-	
-	
-	paddle1.scale.y += (1 - paddle1.scale.y) * 0.2;	
-	paddle1.scale.z += (1 - paddle1.scale.z) * 0.2;	
+
+
+	paddle1.scale.y += (1 - paddle1.scale.y) * 0.2;
+	paddle1.scale.z += (1 - paddle1.scale.z) * 0.2;
 	paddle1.position.y += paddle1DirY;
 	paddle1.position.z += paddle1DirZ;
-	//console.log(paddle1DirY + " " + paddle1DirZ); 
+	//console.log(paddle1DirY + " " + paddle1DirZ);
 	//console.log("comp" + fieldLength * 0.45 + " " + paddle1.position.y + "c");
 }
 
 // Handles camera and lighting logic
 function cameraPhysics()
-{	
+{
 	// move to behind the player's paddle
 	camera.position.x = paddle1.position.x - 100;
 	camera.position.y += (paddle1.position.y - camera.position.y) * 0.05;
-	camera.position.z = paddle1.position.z + 40 + 0.04;
-	
+	camera.position.z = paddle1.position.z; // + 40 + 0.04;
+
+
 	// rotate to face towards the opponent
 	camera.rotation.x = -0.01 * Math.PI/180;
 	camera.rotation.y = -60 * Math.PI/180;
 	camera.rotation.z = -90 * Math.PI/180;
+
 }
 
 
@@ -550,7 +596,7 @@ function cameraPhysics()
 function paddlePhysics()
 {
 	// PLAYER PADDLE LOGIC
-	
+
 	// if ball is aligned with paddle1 on x plane
 	// remember the position is the CENTER of the object
 	// we only check between the front and the middle of the paddle (one-way collision)
@@ -577,7 +623,7 @@ function paddlePhysics()
                         }
                         else
                         {
-                            ballDirZ = 1 + angle; 
+                            ballDirZ = 1 + angle;
                         }
 
 
@@ -595,9 +641,9 @@ function paddlePhysics()
 
 		}
 	}
-	
+
 	// OPPONENT BALL LOGIC
-	
+
 	// if ball is aligned with paddle2 on x plane
 	// remember the position is the CENTER of the object
 	// we only check between the front and the middle of the paddle (one-way collision)
@@ -612,7 +658,7 @@ function paddlePhysics()
 			if (ballDirX > 0)
 			{
 				// stretch the paddle to indicate a hit
-				//paddle2.scale.y = 15;	
+				//paddle2.scale.y = 15;
 				// switch direction of ball travel to create bounce
 				ballDirX = -ballDirX;
 				// we impact ball angle when hitting it
@@ -638,11 +684,11 @@ function resetBall(loser)
 	ball.position.x = 0;
 	ball.position.y = 0;
 	ball.position.z = radius*10;
-    ballDirZ = 0.0001
+    ballDirZ = 0.0001;
 
 	wait(1000);
 	// if player lost the last point, we send the ball to opponent
-	if (loser == 1)
+	if (loser === 1)
 	{
 		ballDirX = -1;
 	}
@@ -651,7 +697,7 @@ function resetBall(loser)
 	{
 		ballDirX = 1;
 	}
-	
+
 	// set the ball to move +ve in y plane (towards left from the camera)
 	ballDirY = 1;
 }
@@ -665,7 +711,7 @@ function matchScoreCheck()
 		// stop the ball
 		ballSpeed = 0;
 		// write to the banner
-		document.getElementById("scores").innerHTML = "Player wins!";		
+		document.getElementById("scores").innerHTML = "Player wins!";
 		document.getElementById("winnerBoard").innerHTML = "Refresh to play again";
 	}
 	// else if opponent has 7 points
