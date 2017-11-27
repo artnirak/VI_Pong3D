@@ -51,11 +51,11 @@ function setup()
 function createScene()
 {
 	// set the scene size
-	var WIDTH = 1280,
-	  HEIGHT = 720;
+	var WIDTH = 1120,
+	  HEIGHT = 832;
 
 	// set some camera attributes
-	var VIEW_ANGLE = 80,
+	var VIEW_ANGLE = 110,
 	  ASPECT = WIDTH / HEIGHT,
 	  NEAR = 0.01,
 	  FAR = 1000000000000;
@@ -104,7 +104,7 @@ function createScene()
 	var paddle2Material =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: 0xFF4045
+		  color: "darkred"
 		});
 	/*
 	// create the plane's material
@@ -215,7 +215,7 @@ function createScene()
 	var sphereMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: 0xD43001
+		  color: "green"
 		});
 
 	// Create a ball with sphere geometry
@@ -320,13 +320,12 @@ function createScene()
 	// add a spot light
 	// this is important for casting shadows
     spotLight = new THREE.SpotLight(0xF8D898);
-    spotLight.position.set(-10000, 0, -700);
-    spotLight.intensity = 2.5;
+    spotLight.position.set(-1000, 0, -100);
+    spotLight.intensity = 4.5;
     spotLight.castShadow = true;
     scene.add(spotLight);
 
-	// MAGIC SHADOW CREATOR DELUXE EDITION with Lights PackTM DLC
-	renderer.shadowMapEnabled = true;
+	renderer.shadowMapEnabled = false;
 }
 
 function draw()
@@ -370,12 +369,12 @@ function ballPhysics()
 	}
 
 	// if ball goes to the side (side of table)
-	if (ball.position.y <= -fieldLength/2)
+	if (ball.position.y-radius == -fieldLength/2)
 	{
 		ballDirY = -ballDirY;
 	}
 	// if ball goes to the side (side of table)
-	if (ball.position.y >= fieldLength/2)
+	if (ball.position.y+radius == fieldLength/2)
 	{
 		ballDirY = -ballDirY;
 	}
@@ -614,7 +613,7 @@ function paddlePhysics()
                 if (ballDirX < 0)
                 {
                     ballDirX = -ballDirX;
-                    //if paddle is turned up
+                    //if paddle is turned up and higher than the table ground
                     if (paddle1.rotation.y < 0 && ball.position.z > radius)
                     {
                         if(ballDirZ<0)
@@ -623,15 +622,46 @@ function paddlePhysics()
                         }
                         else
                         {
-                            ballDirZ = 1 + angle;
+                            ballDirZ = 1;
                         }
-
-
                     }
-                    //if paddle is turned down
+                    //if paddle is turned down and higher than the table ground
                     if (paddle1.rotation.y > 0 && ball.position.z > radius)
                     {
-                        //if (ball)
+                        if (ballDirZ>0)
+                        {
+                            ballDirZ = -ballDirZ;
+                        }
+                        else
+                        {
+                            ballDirZ = -1;
+                        }
+                    }
+                    //if paddle is turned left
+                    if (paddle1.rotation.z > 0)
+                    {
+                        if (ballDirY<0)
+                        {
+                            ballDirY = -ballDirY
+                        }
+                        else
+                        {
+                            ballDirY = 1;
+                        }
+
+                    }
+                    //if paddle is turned right
+                    if (paddle1.rotation.z < 0)
+                    {
+                        if (ballDirY>0)
+                        {
+                            ballDirY = -ballDirY
+                        }
+                        else
+                        {
+                            ballDirY = -1;
+                        }
+
                     }
 
 
