@@ -215,7 +215,7 @@ function createScene()
 	var sphereMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: "green"
+		  color: "white"
 		});
 
 	// Create a ball with sphere geometry
@@ -329,9 +329,9 @@ function createScene()
 }
 
 //////////////settings/////////
-var movementSpeed = 50;
+var movementSpeed = 20;
 var totalObjects = 50;
-var objectSize = 5;
+var objectSize = 1;
 var sizeRandomness = 50;
 var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
 /////////////////////////////////
