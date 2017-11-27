@@ -207,9 +207,9 @@ function createScene()
 
 	// // set up the sphere vars
 	// lower 'segment' and 'ring' values will increase performance
-	var radius = 5,
-		segments = 6,
-		rings = 6;
+	var radius = 6,
+		segments = 10,
+		rings = 10;
 
 	// // create the sphere's material
 	var sphereMaterial =
@@ -320,7 +320,7 @@ function createScene()
 	// add a spot light
 	// this is important for casting shadows
     spotLight = new THREE.SpotLight(0xF8D898);
-    spotLight.position.set(0, 0, 460);
+    spotLight.position.set(-10000, 0, -700);
     spotLight.intensity = 2.5;
     spotLight.castShadow = true;
     scene.add(spotLight);
@@ -422,7 +422,7 @@ function opponentPaddleMovement()
 {
 	// Lerp towards the ball on the y plane
 	paddle2DirY = (ball.position.y - paddle2.position.y) * difficulty;
-	paddle2DirZ = (ball.position.z+radius - paddle2.position.z) * difficulty;
+	paddle2DirZ = (ball.position.z - paddle2.position.z) * difficulty;
 
 	// in case the Lerp function produces a value above max paddle speed, we clamp it
 	if (Math.abs(paddle2DirZ) <= paddleSpeed)
@@ -474,7 +474,7 @@ function playerPaddleMovement()
 	if (Key.isDown(Key.A))
 	{
 
-		paddle1.rotation.z = 0.2;
+		paddle1.rotation.z = angle;
 		// if paddle is not touching the side of table
 		// we move
 		if (Key.isDown(Key.SHIFT))
@@ -497,7 +497,7 @@ function playerPaddleMovement()
 	// move right
 	if (Key.isDown(Key.D))
 	{
-		paddle1.rotation.z = -0.2;
+		paddle1.rotation.z = -angle;
 		// if paddle is not touching the side of table
 		// we move
 		if (Key.isDown(Key.SHIFT))
@@ -518,7 +518,7 @@ function playerPaddleMovement()
 	//move up
 	if (Key.isDown(Key.W))
 	{
-		paddle1.rotation.y = -0.2;
+		paddle1.rotation.y = -angle;
 		if (Key.isDown(Key.SHIFT))
         {
             paddle1DirZ = 0;
@@ -539,7 +539,7 @@ function playerPaddleMovement()
 	//move down
 	if (Key.isDown(Key.S))
 	{
-		paddle1.rotation.y = 0.2;
+		paddle1.rotation.y = angle;
 		if (Key.isDown(Key.SHIFT))
         {
             paddle1DirZ = 0;
