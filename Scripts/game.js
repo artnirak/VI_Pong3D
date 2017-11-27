@@ -329,10 +329,10 @@ function createScene()
 }
 
 //////////////settings/////////
-var movementSpeed = 20;
-var totalObjects = 50;
+var movementSpeed = 10;
+var totalObjects = 100;
 var objectSize = 1;
-var sizeRandomness = 50;
+var sizeRandomness = 10;
 var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
 /////////////////////////////////
 var dirs = [];
@@ -661,15 +661,15 @@ function paddlePhysics()
 	// if ball is aligned with paddle1 on x plane
 	// remember the position is the CENTER of the object
 	// we only check between the front and the middle of the paddle (one-way collision)
-	if (ball.position.x+radius <= paddle1.position.x + paddleWidth
-	&&  ball.position.x+radius >= paddle1.position.x)
+	if (ball.position.x <= paddle1.position.x + paddleWidth
+	&&  ball.position.x >= paddle1.position.x)
 	{
 		// and if ball is aligned with paddle1 on y plane
-		if (ball.position.y+radius <= paddle1.position.y + paddleHeight/2
-		&&  ball.position.y+radius >= paddle1.position.y - paddleHeight/2)
+		if (ball.position.y <= paddle1.position.y + paddleHeight/2
+		&&  ball.position.y >= paddle1.position.y - paddleHeight/2)
 		{
-		    if (ball.position.z+radius <= paddle1.position.z + paddleDepth/2
-		    && ball.position.z+radius >= paddle1.position.z - paddleHeight/2)
+		    if (ball.position.z <= paddle1.position.z + paddleDepth/2
+		    && ball.position.z >= paddle1.position.z - paddleDepth/2)
 		    {
 		        // and if ball is travelling towards player (-ve direction)
                 if (ballDirX < 0)
