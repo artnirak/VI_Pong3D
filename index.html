@@ -3,6 +3,22 @@
 	<head>
 		<title>Game</title>
 		<style>
+			.status{
+				position:absolute;
+				width:300px;
+				height:300px;
+				z-index:15;
+				top:50%;
+				left:50%;
+				margin:-150px 0 0 -150px;
+				background-color: #000000;
+				text-align:center;
+				opacity:0.8;
+				border:5px solid #888888;
+				border-radius:25px;
+				display:none;
+				color:#ffffff
+			}
 			body {
 				background-color: black;
 			}
@@ -42,6 +58,24 @@
 			<br>D - move right</h3>
 			<h1 id='scores'>0-0</h1>
 		</div>
+		</div>
+		cenas aqui
+		<div class="status" id="status"><h2>You Be Dead</h2>
+			Press Space To Continue
+		</div>
+		<div class="status" id="GameOver"><h2>Game Over</h2>
+			<br/><br/>
+			<div id="Kills">0</div>
+			<div id="Bullets">0</div>
+			<br/><br/>
+			<h3>Press Space To Play Again</h3>
+		</div>
+		<div class="status" id="Start"><h2>Space HACK</h2>
+			<br>use w,a,s,d to move
+			<br>enter to shoot
+			<br><br>Go Full Screen For Better View <br>
+			<br>
+			<h3>Press Space To Play</h3>
 		</div>
 	</body>
 </html>

@@ -10,7 +10,7 @@ var radius = 5;
 var angle = 0.2;
 
 // field variables
-var fieldWidth = 400, fieldLength = 200, fieldHeight = 200;
+var fieldWidth = 400, fieldLength = 200, fieldHeight = 210;
 
 // paddle variables
 var paddleWidth, paddleHeight, paddleDepth, paddleQuality;
@@ -26,7 +26,9 @@ var score1 = 0, score2 = 0;
 var maxScore = 7;
 
 // set opponent reflexes (0 - easiest, 1 - hardest)
-var difficulty = 0.5;
+var difficulty = 0.0932;
+var StartText  = document.getElementById('Start');
+StartText.style.display= 'block';
 
 // ------------------------------------- //
 // ------- GAME FUNCTIONS -------------- //
@@ -404,6 +406,8 @@ function ballPhysics()
 	// if ball goes off the 'left' side (Player's side)
 	if (ball.position.x <= -fieldWidth/2)
 	{
+	    expls = new Audio('resources/audio/Explosion_00.mp3');
+        expls.play();
 		// CPU scores
 		score2++;
 		// update scoreboard HTML
@@ -416,6 +420,8 @@ function ballPhysics()
 	// if ball goes off the 'right' side (CPU's side)
 	if (ball.position.x >= fieldWidth/2)
 	{
+		point = new Audio('resources/audio/Collect_Point_01.mp3');
+        point.play();
 		// Player scores
 		score1++;
 		// update scoreboard HTML
@@ -519,7 +525,6 @@ function opponentPaddleMovement()
 			paddle2.position.y -= paddleSpeed;
 		}
 	}
-
 }
 
 
@@ -671,29 +676,59 @@ function paddlePhysics()
                 if (ballDirX < 0)
                 {
                     ballDirX = -ballDirX;
+                    beep = new Audio('resources/audio/Shoot_03.mp3');
+                    beep.play();
                     parts.push(new ExplodeAnimation(ball.position.x, ball.position.y,ball.position.z));
-                    //if paddle is turned up and higher than the table ground
+                    //if paddle is turned up and ball higher than the table ground
                     if (paddle1.rotation.y < 0 && ball.position.z > radius)
                     {
                         if(ballDirZ<0)
                         {
-                            ballDirZ = -ballDirZ;
+                            if(paddle1DirZ > 0)
+                            {
+                                ballDirZ = -ballDirZ + angle;
+                            }
+                            else {
+                                ballDirZ = -ballDirZ;
+                            }
+
                         }
                         else
                         {
-                            ballDirZ = 1;
+                            if(paddle1DirZ > 0)
+                            {
+                                ballDirZ = 1 + angle;
+                            }
+                            else {
+                                ballDirZ = 1;
+                            }
                         }
                     }
-                    //if paddle is turned down and higher than the table ground
+                    //if paddle is turned down and ball higher than the table ground
                     if (paddle1.rotation.y > 0 && ball.position.z > radius)
                     {
                         if (ballDirZ>0)
                         {
-                            ballDirZ = -ballDirZ;
+                            if(paddle1DirZ < 0)
+                            {
+                                ballDirZ = -ballDirZ - angle;
+                            }
+                            else
+                            {
+                                ballDirZ = -ballDirZ;
+                            }
+
                         }
                         else
                         {
-                            ballDirZ = -1;
+                            if(paddle1DirZ < 0)
+                            {
+                                ballDirZ = -1 - angle;
+                            }
+                            else {
+                                ballDirZ = -1;
+                            }
+
                         }
                     }
                     //if paddle is turned left
@@ -701,11 +736,26 @@ function paddlePhysics()
                     {
                         if (ballDirY<0)
                         {
-                            ballDirY = -ballDirY
+                            if(paddle1DirY > 0)
+                            {
+                                ballDirY = -ballDirY + angle;
+                            }
+                            else
+                            {
+                                ballDirY = -ballDirY;
+                            }
+
                         }
                         else
                         {
-                            ballDirY = 1;
+                            if(paddle1DirY > 0)
+                            {
+                                ballDirY = 1 + angle;
+                            }
+                            else {
+                                ballDirY = 1;
+                            }
+
                         }
 
                     }
@@ -714,11 +764,25 @@ function paddlePhysics()
                     {
                         if (ballDirY>0)
                         {
-                            ballDirY = -ballDirY
+                            if(paddle1DirY<0)
+                            {
+                                ballDirY = -ballDirY - angle;
+                            }
+                            else {
+                                ballDirY = -ballDirY;
+                            }
+
                         }
                         else
                         {
-                            ballDirY = -1;
+                            if(paddle1DirY <0)
+                            {
+                                ballDirY = -1 - angle;
+                            }
+                            else {
+                                ballDirY = -1;
+                            }
+
                         }
 
                     }
@@ -744,6 +808,8 @@ function paddlePhysics()
 			if (ballDirX > 0)
 			{
 			    parts.push(new ExplodeAnimation(ball.position.x, ball.position.y,ball.position.z));
+                boop = new Audio('resources/audio/Shoot_03.mp3');
+                boop.play();
 				// stretch the paddle to indicate a hit
 				//paddle2.scale.y = 15;
 				// switch direction of ball travel to create bounce
@@ -767,13 +833,14 @@ function wait(ms){
 
 function resetBall(loser)
 {
+    wait(1000);
 	// position the ball in the center of the table
 	ball.position.x = 0;
 	ball.position.y = 0;
 	ball.position.z = radius*10;
-    ballDirZ = 0.0001;
+    ballDirZ = 0;
 
-	wait(1000);
+
 	// if player lost the last point, we send the ball to opponent
 	if (loser === 1)
 	{
