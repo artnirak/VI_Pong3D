@@ -104,9 +104,9 @@ function createScene()
 	c.appendChild(renderer.domElement);
 
 	// set up the playing surface plane
-	var planeWidth = fieldWidth,
-		PlaneLength = fieldLength,
-		planeQuality = 50;
+	var barrierWidth = fieldWidth,
+		barrierLength = fieldLength,
+		barrierQuality = 50;
 
 	// create the paddle1's material
 	var paddle1Material =
@@ -130,36 +130,14 @@ function createScene()
 		  map: THREE.ImageUtils.loadTexture('resources/textures/scifi2.jpg')
 		});
 
-	// create the ground's material
-	var groundMaterial =
-	  new THREE.MeshLambertMaterial(
-		{
-		  color: "darkred"
-		});
-
-    /*
-	// create the playing surface plane
-	var plane = new THREE.Mesh(
-
-	  new THREE.PlaneGeometry(
-		planeWidth * 0.95,	// 95% of table width, since we want to show where the ball goes out-of-bounds
-		PlaneLength,
-		planeQuality,
-		planeQuality),
-
-	  planeMaterial);
-
-	scene.add(plane);
-	plane.receiveShadow = true;*/
-
 	var bottomBarrier = new THREE.Mesh(
 
 	  new THREE.CubeGeometry(
-		planeWidth * 1.05,
-		PlaneLength * 1.03,
+		barrierWidth * 1.05,
+		barrierLength * 1.03,
 		10,
-		planeQuality,
-		planeQuality,
+		barrierQuality,
+		barrierQuality,
 		1),
 
 	  barrierMaterial);
@@ -170,11 +148,11 @@ function createScene()
     var upperBarrier = new THREE.Mesh(
 
         new THREE.CubeGeometry(
-            planeWidth * 1.05,
-            PlaneLength * 1.03,
+            barrierWidth * 1.05,
+            barrierLength * 1.03,
             5,
-            planeQuality,
-            planeQuality,
+            barrierQuality,
+            barrierQuality,
             1),
 
         barrierMaterial);
@@ -185,11 +163,11 @@ function createScene()
     var leftBarrier = new THREE.Mesh(
 
         new THREE.CubeGeometry(
-            planeWidth * 1.05,
+            barrierWidth * 1.05,
             10,
             100 + 20,
-            planeQuality,
-            planeQuality,
+            barrierQuality,
+            barrierQuality,
             1),
 
         barrierMaterial);
@@ -201,11 +179,11 @@ function createScene()
     var rightBarrier = new THREE.Mesh(
 
         new THREE.CubeGeometry(
-            planeWidth * 1.05,
+            barrierWidth * 1.05,
             10,
             100 + 20,
-            planeQuality,
-            planeQuality,
+            barrierQuality,
+            barrierQuality,
             1),
 
         barrierMaterial);
@@ -294,25 +272,6 @@ function createScene()
 	paddle1.position.z = paddleDepth;
 	paddle2.position.z = paddleDepth;
 
-
-	// finally we finish by adding a ground plane
-	// to show off pretty shadows
-	var ground = new THREE.Mesh(
-
-	  new THREE.CubeGeometry(
-	  1000,
-	  1000,
-	  3,
-	  1,
-	  1,
-	  1 ),
-
-	  groundMaterial);
-    // set ground to arbitrary z position to best show off shadowing
-	ground.position.z = -132;
-	ground.receiveShadow = true;
-	scene.add(ground);
-
 	// // create a point light
 	pointLight =
 	  new THREE.PointLight(0xF8D898);
@@ -342,6 +301,35 @@ function createScene()
         this.play();
     }, false);
     myAudio.play();
+
+    // SKYBOX
+
+    var urlPrefix = "resources/skybox/";
+
+    var urls = [urlPrefix + "back.png", urlPrefix + "front.png",
+        urlPrefix + "left.png", urlPrefix + "right.png",
+        urlPrefix + "top.png", urlPrefix + "bottom.png"];
+    var textureCube = THREE.ImageUtils.loadTextureCube(urls, undefined, function () {
+
+
+        var shader = THREE.ShaderLib["cube"];
+        var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+        shader.uniforms['tCube'].value = textureCube;   // textureCube has been init before
+        var material = new THREE.ShaderMaterial({
+            fragmentShader: shader.fragmentShader,
+            vertexShader: shader.vertexShader,
+            uniforms: shader.uniforms,
+            depthWrite: false,
+            side: THREE.BackSide
+        });
+
+
+        var geometry = new THREE.CubeGeometry(1000, 1000, 1000);
+        var skybox = new THREE.Mesh(geometry, material);
+        scene.add(skybox);
+
+    });
+
 }
 
 
