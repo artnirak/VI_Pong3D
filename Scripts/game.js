@@ -18,7 +18,7 @@ var paddle1DirY = 0, paddle1DirZ = 0, paddle2DirY = 0, paddle2DirZ = 0, paddleSp
 
 // ball variables
 var ball, paddle1, paddle2;
-var ballDirX = 1, ballDirY = 1, ballDirZ = 0, ballSpeed = 1;
+var ballDirX = 1, ballDirY = 1, ballDirZ = 0, ballSpeed = 1.4;
 
 // game-related variables
 var score1 = 0, score2 = 0;
@@ -96,7 +96,7 @@ function createScene()
 	var paddle1Material =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: "blue",
+		  color: "green",
 		  opacity: 0.5,
 		  transparent: true
 		});
@@ -104,28 +104,21 @@ function createScene()
 	var paddle2Material =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: "darkred"
+		  map: THREE.ImageUtils.loadTexture('resources/textures/evilface.jpg')
 		});
-	/*
-	// create the plane's material
-	var planeMaterial =
-	  new THREE.MeshLambertMaterial(
-		{
-		  color: 0x4BD121
-		});*/
 
 	// create the table's material
 	var barrierMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: 0x5D5B22
+		  map: THREE.ImageUtils.loadTexture('resources/textures/scifi2.jpg')
 		});
 
 	// create the ground's material
 	var groundMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: 0x888888
+		  color: "darkred"
 		});
 
     /*
@@ -163,13 +156,13 @@ function createScene()
         new THREE.CubeGeometry(
             planeWidth * 1.05,
             PlaneLength * 1.03,
-            10,
+            5,
             planeQuality,
             planeQuality,
             1),
 
         barrierMaterial);
-    upperBarrier.position.z = 105;
+    upperBarrier.position.z = 107.5;
     scene.add(upperBarrier);
     upperBarrier.receiveShadow = true;
 
@@ -207,15 +200,15 @@ function createScene()
 
 	// // set up the sphere vars
 	// lower 'segment' and 'ring' values will increase performance
-	var radius = 6,
-		segments = 10,
-		rings = 10;
+	var radius = 5,
+		segments = 30,
+		rings = 30;
 
 	// // create the sphere's material
 	var sphereMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: "white"
+		  map : THREE.ImageUtils.loadTexture('resources/textures/scifi4.jpg')
 		});
 
 	// Create a ball with sphere geometry
@@ -312,7 +305,7 @@ function createScene()
 	pointLight.position.x = -1000;
 	pointLight.position.y = 0;
 	pointLight.position.z = 1000;
-	pointLight.intensity = 2.5;
+	pointLight.intensity = 1.5;
 	pointLight.distance = 10000;
 	// add to the scene
 	scene.add(pointLight);
@@ -321,11 +314,18 @@ function createScene()
 	// this is important for casting shadows
     spotLight = new THREE.SpotLight(0xF8D898);
     spotLight.position.set(-1000, 0, -100);
-    spotLight.intensity = 4.5;
+    spotLight.intensity = 1.5;
     spotLight.castShadow = true;
     scene.add(spotLight);
 
 	renderer.shadowMapEnabled = false;
+
+	myAudio = new Audio('resources/audio/core.mp3');
+    myAudio.addEventListener('ended', function() {
+        this.currentTime = 0;
+        this.play();
+    }, false);
+    myAudio.play();
 }
 
 //////////////settings/////////
@@ -426,12 +426,12 @@ function ballPhysics()
 	}
 
 	// if ball goes to the side (side of table)
-	if (ball.position.y-radius == -fieldLength/2)
+	if (ball.position.y-radius <= -fieldLength/2)
 	{
 		ballDirY = -ballDirY;
 	}
 	// if ball goes to the side (side of table)
-	if (ball.position.y+radius == fieldLength/2)
+	if (ball.position.y+radius >= fieldLength/2)
 	{
 		ballDirY = -ballDirY;
 	}
