@@ -8,6 +8,7 @@ var Key = {
   A: 65,
   W: 87,
   D: 68,
+  SPACE: 32,
   S: 83,
 
   isDown: function(keyCode) {
@@ -16,6 +17,11 @@ var Key = {
 
   onKeydown: function(event) {
     this._pressed[event.keyCode] = true;
+    if(event.keyCode==Key.SPACE)
+    {
+        document.getElementById('Start').style.display = "none";
+        draw();
+    }
   },
 
   onKeyup: function(event) {

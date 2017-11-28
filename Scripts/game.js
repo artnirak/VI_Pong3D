@@ -18,7 +18,7 @@ var paddle1DirY = 0, paddle1DirZ = 0, paddle2DirY = 0, paddle2DirZ = 0, paddleSp
 
 // ball variables
 var ball, paddle1, paddle2;
-var ballDirX = 1, ballDirY = 1, ballDirZ = 0, ballSpeed = 1.4;
+var ballDirX = 1, ballDirY = 1, ballDirZ = 0.5, ballSpeed = 1.4;
 
 // game-related variables
 var score1 = 0, score2 = 0;
@@ -27,8 +27,17 @@ var maxScore = 7;
 
 // set opponent reflexes (0 - easiest, 1 - hardest)
 var difficulty = 0.0932;
-var StartText  = document.getElementById('Start');
-StartText.style.display= 'block';
+
+//////////////settings/////////
+var movementSpeed = 10;
+var totalObjects = 100;
+var objectSize = 1;
+var sizeRandomness = 10;
+var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
+/////////////////////////////////
+var dirs = [];
+var parts = [];
+
 
 // ------------------------------------- //
 // ------- GAME FUNCTIONS -------------- //
@@ -36,18 +45,22 @@ StartText.style.display= 'block';
 
 function setup()
 {
-	// update the board to reflect the max score for match win
-	document.getElementById("winnerBoard").innerHTML = "First to " + maxScore + " wins!";
-
+    document.getElementById('Start').style.display = "block";
 	// now reset player and opponent scores
 	score1 = 0;
 	score2 = 0;
-
+    /*
+	var StartText  = document.getElementById('Start');
+    StartText.style.display = 'block';
+    if(Key.isDown(Key.SPACE) )
+    {
+        StartText.style.display = 'none';
+        console.log("faz");
+    }
+    */
 	// set up all the 3D objects in the scene
 	createScene();
 
-	// and let's get cracking!
-	draw();
 }
 
 function createScene()
@@ -57,12 +70,13 @@ function createScene()
 	  HEIGHT = 832;
 
 	// set some camera attributes
-	var VIEW_ANGLE = 110,
+	var VIEW_ANGLE = 90,
 	  ASPECT = WIDTH / HEIGHT,
 	  NEAR = 0.01,
 	  FAR = 1000000000000;
 
 	var c = document.getElementById("gameCanvas");
+
 
 	// create a WebGL renderer, camera
 	// and a scene
@@ -330,15 +344,6 @@ function createScene()
     myAudio.play();
 }
 
-//////////////settings/////////
-var movementSpeed = 10;
-var totalObjects = 100;
-var objectSize = 1;
-var sizeRandomness = 10;
-var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
-/////////////////////////////////
-var dirs = [];
-var parts = [];
 
 function ExplodeAnimation(x,y,z)
 {
@@ -378,27 +383,25 @@ function ExplodeAnimation(x,y,z)
       this.object.geometry.verticesNeedUpdate = true;
     }
   }
-
 }
 
-parts.push(new ExplodeAnimation(0, 0));
+
 
 function draw()
 {
-	// draw THREE.JS scene
-	renderer.render(scene, camera);
-	// loop draw function call
-	requestAnimationFrame(draw);
-
-	ballPhysics();
-	paddlePhysics();
-	cameraPhysics();
-	playerPaddleMovement();
-	opponentPaddleMovement();
+    // draw THREE.JS scene
+    renderer.render(scene, camera);
+    requestAnimationFrame(draw);
+    ballPhysics();
+    paddlePhysics();
+    cameraPhysics();
+    playerPaddleMovement();
+    opponentPaddleMovement();
     var pCount = parts.length;
     while(pCount--) {
         parts[pCount].update();
     }
+
 }
 
 function ballPhysics()
@@ -534,10 +537,8 @@ function playerPaddleMovement()
 	// move left
 	if (Key.isDown(Key.A))
 	{
-
 		paddle1.rotation.z = angle;
 		// if paddle is not touching the side of table
-		// we move
 		if (Key.isDown(Key.SHIFT))
 		{
 		    paddle1DirY = 0;
@@ -639,14 +640,14 @@ function playerPaddleMovement()
 function cameraPhysics()
 {
 	// move to behind the player's paddle
-	camera.position.x = paddle1.position.x - 100;
-	camera.position.y += (paddle1.position.y - camera.position.y) * 0.05;
-	camera.position.z = paddle1.position.z; // + 40 + 0.04;
+	camera.position.x = -300;
+	camera.position.y = (paddle1.position.y - camera.position.y) * 0.05;
+	camera.position.z = 65; // + 40 + 0.04;
 
 
 	// rotate to face towards the opponent
 	camera.rotation.x = -0.01 * Math.PI/180;
-	camera.rotation.y = -60 * Math.PI/180;
+	camera.rotation.y = -85 * Math.PI/180;
 	camera.rotation.z = -90 * Math.PI/180;
 
 }
@@ -700,7 +701,7 @@ function paddlePhysics()
                                 ballDirZ = 1 + angle;
                             }
                             else {
-                                ballDirZ = 1;
+                                ballDirZ = -ballDirZ;
                             }
                         }
                     }
@@ -726,7 +727,7 @@ function paddlePhysics()
                                 ballDirZ = -1 - angle;
                             }
                             else {
-                                ballDirZ = -1;
+                                ballDirZ = ballDirZ;
                             }
 
                         }
@@ -753,7 +754,7 @@ function paddlePhysics()
                                 ballDirY = 1 + angle;
                             }
                             else {
-                                ballDirY = 1;
+                                ballDirY = -ballDirY;
                             }
 
                         }
@@ -780,7 +781,7 @@ function paddlePhysics()
                                 ballDirY = -1 - angle;
                             }
                             else {
-                                ballDirY = -1;
+                                ballDirY = -ballDirY;
                             }
 
                         }
@@ -838,7 +839,7 @@ function resetBall(loser)
 	ball.position.x = 0;
 	ball.position.y = 0;
 	ball.position.z = radius*10;
-    ballDirZ = 0;
+    ballDirZ = 0.5;
 
 
 	// if player lost the last point, we send the ball to opponent
