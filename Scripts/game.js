@@ -17,7 +17,7 @@ var playerPaddleDirY = 0, playerPaddleDirZ = 0, cpuPaddleDirY = 0, cpuPaddleDirZ
 
 // ball variables
 var ball;
-var ballDirX = 1, ballDirY = 1, ballDirZ = 0.5, ballSpeed = 0.4, radius = 5;
+var ballDirX = 1, ballDirY = 1, ballDirZ = 0.5, ballSpeed = 1.4, radius = 5;
 
 // game-related variables
 var score1 = 0, score2 = 0;
@@ -26,7 +26,7 @@ var score1 = 0, score2 = 0;
 var maxScore = 5;
 
 // set opponent reflexes (0 - easiest, 1 - hardest)
-var difficulty = 0.0932;
+var difficulty = 0.5;
 
 var myAudio = new Audio('resources/audio/core.mp3');
 
@@ -429,7 +429,7 @@ function ballPhysics()
         ballDirZ = -ballDirZ;
 	}
 
-	if (ball.position.z <= 5 && ballDirZ < 0)
+	if (ball.position.z <= radius && ballDirZ < 0)
 	{
 	    ballDirZ = -ballDirZ;
 	}
@@ -471,7 +471,12 @@ function opponentPaddleMovement()
 	// in case the Lerp function produces a value above max paddle speed, we clamp it
 	if (Math.abs(cpuPaddleDirZ) <= paddleSpeed)
 	{
- 		cpuPaddle.position.z += cpuPaddleDirZ;
+	    if(cpuPaddle.position.z < fieldHeight * 0.5 - (paddleHeight/2) && cpuPaddle.position.z > (paddleHeight/2))
+	    {
+	        cpuPaddle.position.z += cpuPaddleDirZ;
+	        console.log(cpuPaddle.position.z + " and " + paddleHeight/2 + " z1")
+	    }
+
 	}
 	// if the lerp value is too high, we have to limit speed to paddleSpeed
 	else
@@ -479,19 +484,32 @@ function opponentPaddleMovement()
 		// if paddle is lerping in +ve direction
 		if (cpuPaddleDirZ > paddleSpeed)
 		{
-			cpuPaddle.position.z += paddleSpeed;
+		    if(cpuPaddle.position.z < fieldHeight * 0.5  - (paddleHeight/2) )
+		    {
+		        cpuPaddle.position.z += paddleSpeed;
+		        console.log(cpuPaddle.position.z + " and " + paddleHeight/2 + " z2")
+		    }
+
 		}
 		// if paddle is lerping in -ve direction
 		else if (cpuPaddleDirZ < -paddleSpeed)
 		{
-			cpuPaddle.position.z -= paddleSpeed;
+		    if(cpuPaddle.position.z > (paddleHeight/2))
+		    {
+		        console.log(cpuPaddle.position.z + " and " + paddleHeight/2 + " z3")
+		        cpuPaddle.position.z -= paddleSpeed;
+		    }
+
 		}
 	}
 
 	// in case the Lerp function produces a value above max paddle speed, we clamp it
 	if (Math.abs(cpuPaddleDirY) <= paddleSpeed)
 	{
-		cpuPaddle.position.y += cpuPaddleDirY;
+	    if(cpuPaddle.position.y < fieldWidth/2 - (paddleWidth/2) && cpuPaddle.position.y > -fieldWidth/2 + paddleWidth/2)
+	    {
+	        cpuPaddle.position.y += cpuPaddleDirY;
+	    }
 	}
 	// if the lerp value is too high, we have to limit speed to paddleSpeed
 	else
@@ -499,12 +517,20 @@ function opponentPaddleMovement()
 		// if paddle is lerping in +ve direction
 		if (cpuPaddleDirY > paddleSpeed)
 		{
-			cpuPaddle.position.y += paddleSpeed;
+		    if(cpuPaddle.position.y < fieldWidth/2 + (paddleWidth/2))
+		    {
+		        cpuPaddle.position.y += paddleSpeed;
+		    }
+
 		}
 		// if paddle is lerping in -ve direction
 		else if (cpuPaddleDirY < -paddleSpeed)
 		{
-			cpuPaddle.position.y -= paddleSpeed;
+		    if(cpuPaddle.position.y > -fieldWidth/2 + (paddleWidth/2))
+		    {
+		        cpuPaddle.position.y -= paddleSpeed;
+		    }
+
 		}
 	}
 }
@@ -769,21 +795,25 @@ function paddlePhysics()
 		if (ball.position.y <= cpuPaddle.position.y + paddleWidth/2
 		&&  ball.position.y >= cpuPaddle.position.y - paddleWidth/2)
 		{
-			// and if ball is travelling towards opponent (+ve direction)
-			if (ballDirX > 0)
-			{
-			    parts.push(new ExplodeAnimation(ball.position.x, ball.position.y,ball.position.z));
-                var boop = new Audio('resources/audio/Shoot_03.mp3');
-                boop.play();
-				// stretch the paddle to indicate a hit
-				//cpuPaddle.scale.y = 15;
-				// switch direction of ball travel to create bounce
-				ballDirX = -ballDirX;
-				// we impact ball angle when hitting it
-				// this is not realistic physics, just spices up the gameplay
-				// allows you to 'slice' the ball to beat the opponent
-				//ballDirY -= cpuPaddleDirY * 0.7;
-			}
+		    if (ball.position.z <= cpuPaddle.position.z + paddleHeight/2
+		    && ball.position.z >= cpuPaddle.position.z - paddleHeight/2)
+		    {
+                // and if ball is travelling towards opponent (+ve direction)
+                if (ballDirX > 0)
+                {
+                    parts.push(new ExplodeAnimation(ball.position.x, ball.position.y,ball.position.z));
+                    var boop = new Audio('resources/audio/Shoot_03.mp3');
+                    boop.play();
+                    // stretch the paddle to indicate a hit
+                    //cpuPaddle.scale.y = 15;
+                    // switch direction of ball travel to create bounce
+                    ballDirX = -ballDirX;
+                    // we impact ball angle when hitting it
+                    // this is not realistic physics, just spices up the gameplay
+                    // allows you to 'slice' the ball to beat the opponent
+                    //ballDirY -= cpuPaddleDirY * 0.7;
+                }
+            }
 		}
 	}
 }
