@@ -3,12 +3,33 @@
 	<head>
 		<title>Game</title>
 		<style>
+            #dir{
+                background-color: black;
+                position: absolute;
+                font-family:"Times New Roman";
+                font-size:30px;
+                font-weight:bold;
+                text-align:center;
+
+                color: yellow;
+
+				width:300px;
+				height:40px;
+				z-index:15;
+				top:25%;
+				left:50%;
+				margin:-150px 0 0 -150px;
+				text-align:center;
+				opacity:0.7;
+				border:5px solid #888888;
+				border-radius:25px;
+            }
 			.status{
 				position:absolute;
 				width:300px;
 				height:300px;
 				z-index:15;
-				top:80%;
+				top:50%;
 				left:50%;
 				margin:-150px 0 0 -150px;
 				background-color: #000000;
@@ -16,7 +37,6 @@
 				opacity:0.8;
 				border:5px solid #888888;
 				border-radius:25px;
-				display:none;
 				color:#ffffff
 			}
 			body {
@@ -25,20 +45,9 @@
 			#gameCanvas {
 				background-color: black;
 				width: 1120px;
-				height: 832px;
+				height: 600px;
 				margin: auto;
 				align: center;
-			}
-			#scoreboard {
-				text-align: center;
-				font-family: Segoe UI, Helvetica, Ubuntu, sans-serif;
-				color: white;
-			}
-			#scores {
-				font-size:600%; 
-				padding:0; 
-				margin:0;
-				color: white;
 			}
 			#title {
 				background-color: white;
@@ -51,8 +60,8 @@
 		<script src='./Scripts/keyboard.js'></script>
 		<script src='./Scripts/game.js'></script>
 		<div id='gameCanvas'>
-			<div id='scoreboard'>
-				<h1 id='scores'>0-0</h1>
+			<div id='dir'>
+				DETI 0-0 EVIL
 			</div>
 			<div class="status" id="Start"><h2>Pong 3D</h2>
 				<br>use w,a,s,d to move

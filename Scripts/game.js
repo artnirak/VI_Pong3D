@@ -28,6 +28,7 @@ var maxScore = 7;
 // set opponent reflexes (0 - easiest, 1 - hardest)
 var difficulty = 0.0932;
 
+var myAudio = new Audio('resources/audio/core.mp3');
 //////////////settings/////////
 var movementSpeed = 10;
 var totalObjects = 100;
@@ -37,7 +38,6 @@ var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
 /////////////////////////////////
 var dirs = [];
 var parts = [];
-
 
 // ------------------------------------- //
 // ------- GAME FUNCTIONS -------------- //
@@ -67,7 +67,7 @@ function createScene()
 {
 	// set the scene size
 	var WIDTH = 1120,
-	  HEIGHT = 832;
+	  HEIGHT = 600;
 
 	// set some camera attributes
 	var VIEW_ANGLE = 90,
@@ -76,7 +76,6 @@ function createScene()
 	  FAR = 1000000000000;
 
 	var c = document.getElementById("gameCanvas");
-
 
 	// create a WebGL renderer, camera
 	// and a scene
@@ -295,7 +294,6 @@ function createScene()
 
 	renderer.shadowMapEnabled = false;
 
-	myAudio = new Audio('resources/audio/core.mp3');
     myAudio.addEventListener('ended', function() {
         this.currentTime = 0;
         this.play();
@@ -402,7 +400,8 @@ function ballPhysics()
 		// CPU scores
 		score2++;
 		// update scoreboard HTML
-		document.getElementById("scores").innerHTML = score1 + "-" + score2;
+
+		document.getElementById('dir').innerHTML = "DETI " + score1 + "-" + score2 + " EVIL";
 		// reset ball to center
 		resetBall(2);
 		matchScoreCheck();
@@ -416,7 +415,7 @@ function ballPhysics()
 		// Player scores
 		score1++;
 		// update scoreboard HTML
-		document.getElementById("scores").innerHTML = score1 + "-" + score2;
+		document.getElementById('dir').innerHTML = "DETI " + score1 + "-" + score2 + " EVIL";
 		// reset ball to center
 		resetBall(1);
 		matchScoreCheck();
@@ -628,7 +627,7 @@ function playerPaddleMovement()
 function cameraPhysics()
 {
 	// move to behind the player's paddle
-	camera.position.x = -300;
+	camera.position.x = -290;
 	camera.position.y = (paddle1.position.y - camera.position.y) * 0.05;
 	camera.position.z = 65; // + 40 + 0.04;
 
@@ -671,48 +670,48 @@ function paddlePhysics()
                     //if paddle is turned up and ball higher than the table ground
                     if (paddle1.rotation.y < 0 && ball.position.z > radius)
                     {
-                        if(ballDirZ<0)
+                        if(ballDirZ<0) //ball going down
                         {
-                            if(paddle1DirZ > 0)
+                            if(paddle1DirZ > 0) //paddle is going up
                             {
-                                ballDirZ = -ballDirZ + angle;
+                                ballDirZ = -ballDirZ + angle + 0.1; //strikes the ball with force and the ball goes up with more velocity
                             }
                             else {
-                                ballDirZ = -ballDirZ;
+                                ballDirZ = -ballDirZ; //the paddle isn't moving
                             }
 
                         }
-                        else
+                        else //ball going up or z = 0
                         {
-                            if(paddle1DirZ > 0)
+                            if(paddle1DirZ > 0) //paddle is going up
                             {
-                                ballDirZ = 1 + angle;
+                                ballDirZ = ballDirZ + angle + 0.1; //strikes the ball with force and the ball goes up with more velocity
                             }
                             else {
-                                ballDirZ = -ballDirZ;
+                                ballDirZ = ballDirZ; //the paddle isn't moving
                             }
                         }
                     }
                     //if paddle is turned down and ball higher than the table ground
                     if (paddle1.rotation.y > 0 && ball.position.z > radius)
                     {
-                        if (ballDirZ>0)
+                        if (ballDirZ>0) //ball going up
                         {
-                            if(paddle1DirZ < 0)
+                            if(paddle1DirZ < 0) //paddle is going down
                             {
-                                ballDirZ = -ballDirZ - angle;
+                                ballDirZ = -ballDirZ - angle - 0.1; //strikes the ball with force and the ball goes down with more velocity
                             }
                             else
                             {
-                                ballDirZ = -ballDirZ;
+                                ballDirZ = -ballDirZ; //paddle isn't moving
                             }
 
                         }
-                        else
+                        else //ball going down
                         {
-                            if(paddle1DirZ < 0)
+                            if(paddle1DirZ < 0) //paddle is going down
                             {
-                                ballDirZ = -1 - angle;
+                                ballDirZ = ballDirZ - angle - 0.1;
                             }
                             else {
                                 ballDirZ = ballDirZ;
@@ -723,26 +722,26 @@ function paddlePhysics()
                     //if paddle is turned left
                     if (paddle1.rotation.z > 0)
                     {
-                        if (ballDirY<0)
+                        if (ballDirY<0) //the ball is going right
                         {
-                            if(paddle1DirY > 0)
+                            if(paddle1DirY > 0) //paddle is going left
                             {
-                                ballDirY = -ballDirY + angle;
+                                ballDirY = -ballDirY + angle + 0.1; //hard collision ball goes to the left with more velocity
                             }
                             else
                             {
-                                ballDirY = -ballDirY;
+                                ballDirY = -ballDirY; //paddle isn't moving
                             }
 
                         }
-                        else
+                        else //the ball is going left or y = 0
                         {
-                            if(paddle1DirY > 0)
+                            if(paddle1DirY > 0) //paddle is going left
                             {
-                                ballDirY = 1 + angle;
+                                ballDirY = ballDirY + angle + 0.1;  //hard collision ball goes to the left with more velocity
                             }
                             else {
-                                ballDirY = -ballDirY;
+                                ballDirY = ballDirY; //paddle isn't moving
                             }
 
                         }
@@ -751,25 +750,25 @@ function paddlePhysics()
                     //if paddle is turned right
                     if (paddle1.rotation.z < 0)
                     {
-                        if (ballDirY>0)
+                        if (ballDirY>0) //ball is going left
                         {
-                            if(paddle1DirY<0)
+                            if(paddle1DirY<0) //paddle is going right
                             {
-                                ballDirY = -ballDirY - angle;
+                                ballDirY = -ballDirY - angle - 0.1;  //hard collision ball goes to the right with more velocity
                             }
                             else {
-                                ballDirY = -ballDirY;
+                                ballDirY = -ballDirY; //paddle isn't moving
                             }
 
                         }
-                        else
+                        else //ball goes right
                         {
-                            if(paddle1DirY <0)
+                            if(paddle1DirY <0) //paddle goes right
                             {
-                                ballDirY = -1 - angle;
+                                ballDirY = ballDirY - angle - 0.1;  //hard collision ball goes to the right with more velocity
                             }
                             else {
-                                ballDirY = -ballDirY;
+                                ballDirY = ballDirY; //paddle isn't moving
                             }
 
                         }
@@ -854,8 +853,10 @@ function matchScoreCheck()
 		// stop the ball
 		ballSpeed = 0;
 		// write to the banner
-		document.getElementById("scores").innerHTML = "Player wins!";
-		document.getElementById("winnerBoard").innerHTML = "Refresh to play again";
+		document.getElementById('dir').innerHTML = "DETI wins!";
+		myAudio.pause();
+	    victory = new Audio('resources/audio/Jingle_Win_00.mp3');
+        victory.play();
 	}
 	// else if opponent has 7 points
 	else if (score2 >= maxScore)
@@ -863,7 +864,10 @@ function matchScoreCheck()
 		// stop the ball
 		ballSpeed = 0;
 		// write to the banner
-		document.getElementById("scores").innerHTML = "CPU wins!";
-		document.getElementById("winnerBoard").innerHTML = "Refresh to play again";
+		document.getElementById('dir').innerHTML = "Evil wins!";
+		myAudio.pause();
+        lose = new Audio('resources/audio/Jingle_Lose_00.mp3');
+        lose.play();
+
 	}
 }
