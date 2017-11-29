@@ -19,10 +19,10 @@ var playerPaddleDirY = 0, playerPaddleDirZ = 0, cpuPaddleDirY = 0, cpuPaddleDirZ
 var ball;
 var ballDirX = 1, ballDirY = 1, ballDirZ = 0.5, ballSpeed = 1.4, radius = 5;
 
-// game-related variables
+//scores for player and cpu
 var score1 = 0, score2 = 0;
 
-// First to maxScore points wins the game
+// First to score 5 points wins the game
 var maxScore = 5;
 
 // set opponent reflexes (0 - easiest, 1 - hardest)
