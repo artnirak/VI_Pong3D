@@ -7,7 +7,7 @@ Referências:
 
 1 - https://codepen.io/Xanmia/pen/otAgz
 2 - https://appdevelopermagazine.com/538/2013/7/27/create-a-3d-pong-game-with-three.js-and-webgl/
-
+3 - http://nokarma.org/2011/02/27/javascript-game-development-keyboard-input/index.html
 
 */
 
@@ -95,7 +95,6 @@ function createScene()
 	scene.add(camera);
 
 	// set a default position for the camera
-	// not doing this somehow messes up shadow rendering
 	camera.position.z = 0;
 
 	// start the renderer
@@ -305,7 +304,7 @@ function createScene()
     spotLight.castShadow = true;
     scene.add(spotLight);
 
-	renderer.shadowMapEnabled = false;
+	renderer.shadowMapEnabled = true;
 
     myAudio.addEventListener('ended', function() {
         this.play();
@@ -413,7 +412,6 @@ function ballPhysics()
 		// CPU scores
 		score2++;
 		// update scoreboard HTML
-
 		document.getElementById('dir').innerHTML = "DETI " + score1 + "-" + score2 + " EVIL";
 		// reset ball to center
 		resetBall(2);
@@ -444,12 +442,12 @@ function ballPhysics()
 	{
 		ballDirY = -ballDirY;
 	}
-
+    // if ball hits the ceiling
 	if (ball.position.z >= fieldHeight * 0.45 + radius && ballDirZ > 0 )
 	{
         ballDirZ = -ballDirZ;
 	}
-
+    // if ball hits the ground
 	if (ball.position.z <= radius && ballDirZ < 0)
 	{
 	    ballDirZ = -ballDirZ;
