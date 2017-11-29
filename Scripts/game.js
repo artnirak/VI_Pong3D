@@ -811,37 +811,35 @@ function paddlePhysics()
 	}
 }
 
-function wait(ms){
-   var start = new Date().getTime();
-   var end = start;
-   while(end < start + ms) {
-     end = new Date().getTime();
-  }
-}
-
 function resetBall(loser)
 {
-    wait(1000);
 	// position the ball in the center of the table
 	ball.position.x = 0;
 	ball.position.y = 0;
 	ball.position.z = radius*10;
-    ballDirZ = 0.5;
 
+    ballDirX = 0;
+    ballDirY = 0;
+    ballDirZ = 0;
 
-	// if player lost the last point, we send the ball to opponent
-	if (loser === 1)
-	{
-		ballDirX = -1;
-	}
-	// else if opponent lost, we send ball to player
-	else
-	{
-		ballDirX = 1;
-	}
+	setTimeout(function () {
+        // if player lost the last point, we send the ball to opponent
+        if (loser === 1)
+        {
+            ballDirX = -1;
+        }
+        // else if opponent lost, we send ball to player
+        else
+        {
+            ballDirX = 1;
+        }
 
-	// set the ball to move +ve in y plane (towards left from the camera)
-	ballDirY = 1;
+        // set the ball to move +ve in y plane (towards left from the camera)
+        ballDirY = 1;
+        ballDirZ = 0.5;
+
+    }, 1000);
+
 }
 
 // checks if either player or opponent has reached 7 points
