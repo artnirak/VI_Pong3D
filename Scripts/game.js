@@ -1,11 +1,10 @@
 
-// ------------------------------------- //
-// ------- GLOBAL VARIABLES ------------ //
-// ------------------------------------- //
+// ------- GLOBAL VARIABLES ------------
 
 // scene object variables
 var renderer, scene, camera, pointLight, spotLight;
 var radius = 5;
+
 //rotation and collision angle
 var angle = 0.2;
 
@@ -22,42 +21,35 @@ var ballDirX = 1, ballDirY = 1, ballDirZ = 0.5, ballSpeed = 1.4;
 
 // game-related variables
 var score1 = 0, score2 = 0;
-// you can change this to any positive whole number
-var maxScore = 7;
+
+// First to maxScore points wins the game
+var maxScore = 5;
 
 // set opponent reflexes (0 - easiest, 1 - hardest)
 var difficulty = 0.0932;
 
 var myAudio = new Audio('resources/audio/core.mp3');
-//////////////settings/////////
+
+// ------- Explosion Animation Settings ------------
+
 var movementSpeed = 10;
 var totalObjects = 100;
 var objectSize = 1;
-var sizeRandomness = 10;
 var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
-/////////////////////////////////
+
 var dirs = [];
 var parts = [];
 
-// ------------------------------------- //
-// ------- GAME FUNCTIONS -------------- //
-// ------------------------------------- //
+// ------- GAME FUNCTIONS --------------
 
 function setup()
 {
     document.getElementById('Start').style.display = "block";
+
 	// now reset player and opponent scores
 	score1 = 0;
 	score2 = 0;
-    /*
-	var StartText  = document.getElementById('Start');
-    StartText.style.display = 'block';
-    if(Key.isDown(Key.SPACE) )
-    {
-        StartText.style.display = 'none';
-        console.log("faz");
-    }
-    */
+
 	// set up all the 3D objects in the scene
 	createScene();
 
@@ -66,14 +58,14 @@ function setup()
 function createScene()
 {
 	// set the scene size
-	var WIDTH = 1120,
-	  HEIGHT = 600;
+	var width = 1120,
+	  height = 600;
 
 	// set some camera attributes
-	var VIEW_ANGLE = 90,
-	  ASPECT = WIDTH / HEIGHT,
-	  NEAR = 0.01,
-	  FAR = 1000000000000;
+	var view_angle = 90,
+	  aspect = width / height,
+	  near = 0.01,
+	  far = 1000000000000;
 
 	var c = document.getElementById("gameCanvas");
 
@@ -82,10 +74,10 @@ function createScene()
 	renderer = new THREE.WebGLRenderer();
 	camera =
 	  new THREE.PerspectiveCamera(
-		VIEW_ANGLE,
-		ASPECT,
-		NEAR,
-		FAR);
+		view_angle,
+		aspect,
+		near,
+		far);
 
 	scene = new THREE.Scene();
 
@@ -97,7 +89,7 @@ function createScene()
 	camera.position.z = 0;
 
 	// start the renderer
-	renderer.setSize(WIDTH, HEIGHT);
+	renderer.setSize(width, height);
 
 	// attach the render-supplied DOM element
 	c.appendChild(renderer.domElement);
@@ -111,7 +103,7 @@ function createScene()
 	var paddle1Material =
 	  new THREE.MeshLambertMaterial(
 		{
-		  color: "green",
+		  color: "darkgrey",
 		  opacity: 0.5,
 		  transparent: true
 		});
@@ -295,7 +287,6 @@ function createScene()
 	renderer.shadowMapEnabled = false;
 
     myAudio.addEventListener('ended', function() {
-        this.currentTime = 0;
         this.play();
     }, false);
     myAudio.play();
@@ -311,7 +302,6 @@ function createScene()
 
 
         var shader = THREE.ShaderLib["cube"];
-        var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
         shader.uniforms['tCube'].value = textureCube;   // textureCube has been init before
         var material = new THREE.ShaderMaterial({
             fragmentShader: shader.fragmentShader,
@@ -333,35 +323,38 @@ function createScene()
 
 function ExplodeAnimation(x,y,z)
 {
-  var geometry = new THREE.Geometry();
+    var particles;
+    var geometry = new THREE.Geometry();
 
-  for (i = 0; i < totalObjects; i ++)
-  {
-    var vertex = new THREE.Vector3();
-    vertex.x = x;
-    vertex.y = y;
-    vertex.z = z;
+    for (var i = 0; i < totalObjects; i++) {
+        var vertex = new THREE.Vector3();
+        vertex.x = x;
+        vertex.y = y;
+        vertex.z = z;
 
-    geometry.vertices.push( vertex );
-    dirs.push({x:(Math.random() * movementSpeed)-(movementSpeed/2),y:(Math.random() * movementSpeed)-(movementSpeed/2),z:(Math.random() * movementSpeed)-(movementSpeed/2)});
-  }
-  var material = new THREE.ParticleBasicMaterial( { size: objectSize,  color: colors[Math.round(Math.random() * colors.length)] });
-  var particles = new THREE.ParticleSystem( geometry, material );
+        geometry.vertices.push(vertex);
+        dirs.push({
+            x: (Math.random() * movementSpeed) - (movementSpeed / 2),
+            y: (Math.random() * movementSpeed) - (movementSpeed / 2),
+            z: (Math.random() * movementSpeed) - (movementSpeed / 2)
+        });
+    }
+    var material = new THREE.ParticleBasicMaterial({
+        size: objectSize,
+        color: colors[Math.round(Math.random() * colors.length)]
+    });
+    particles = new THREE.ParticleSystem(geometry, material);
 
   this.object = particles;
   this.status = true;
 
-  this.xDir = (Math.random() * movementSpeed)-(movementSpeed/2);
-  this.yDir = (Math.random() * movementSpeed)-(movementSpeed/2);
-  this.zDir = (Math.random() * movementSpeed)-(movementSpeed/2);
-
   scene.add( this.object  );
 
   this.update = function(){
-    if (this.status == true){
+    if (this.status === true){
       var pCount = totalObjects;
       while(pCount--) {
-        var particle =  this.object.geometry.vertices[pCount]
+        var particle =  this.object.geometry.vertices[pCount];
         particle.y += dirs[pCount].y;
         particle.x += dirs[pCount].x;
         particle.z += dirs[pCount].z;
@@ -664,7 +657,7 @@ function paddlePhysics()
                 if (ballDirX < 0)
                 {
                     ballDirX = -ballDirX;
-                    beep = new Audio('resources/audio/Shoot_03.mp3');
+                    var beep = new Audio('resources/audio/Shoot_03.mp3');
                     beep.play();
                     parts.push(new ExplodeAnimation(ball.position.x, ball.position.y,ball.position.z));
                     //if paddle is turned up and ball higher than the table ground
@@ -686,9 +679,6 @@ function paddlePhysics()
                             if(paddle1DirZ > 0) //paddle is going up
                             {
                                 ballDirZ = ballDirZ + angle + 0.1; //strikes the ball with force and the ball goes up with more velocity
-                            }
-                            else {
-                                ballDirZ = ballDirZ; //the paddle isn't moving
                             }
                         }
                     }
@@ -713,9 +703,6 @@ function paddlePhysics()
                             {
                                 ballDirZ = ballDirZ - angle - 0.1;
                             }
-                            else {
-                                ballDirZ = ballDirZ;
-                            }
 
                         }
                     }
@@ -732,7 +719,6 @@ function paddlePhysics()
                             {
                                 ballDirY = -ballDirY; //paddle isn't moving
                             }
-
                         }
                         else //the ball is going left or y = 0
                         {
@@ -740,10 +726,6 @@ function paddlePhysics()
                             {
                                 ballDirY = ballDirY + angle + 0.1;  //hard collision ball goes to the left with more velocity
                             }
-                            else {
-                                ballDirY = ballDirY; //paddle isn't moving
-                            }
-
                         }
 
                     }
@@ -767,10 +749,6 @@ function paddlePhysics()
                             {
                                 ballDirY = ballDirY - angle - 0.1;  //hard collision ball goes to the right with more velocity
                             }
-                            else {
-                                ballDirY = ballDirY; //paddle isn't moving
-                            }
-
                         }
 
                     }
@@ -796,7 +774,7 @@ function paddlePhysics()
 			if (ballDirX > 0)
 			{
 			    parts.push(new ExplodeAnimation(ball.position.x, ball.position.y,ball.position.z));
-                boop = new Audio('resources/audio/Shoot_03.mp3');
+                var boop = new Audio('resources/audio/Shoot_03.mp3');
                 boop.play();
 				// stretch the paddle to indicate a hit
 				//paddle2.scale.y = 15;
@@ -845,26 +823,29 @@ function resetBall(loser)
 // checks if either player or opponent has reached 7 points
 function matchScoreCheck()
 {
-	// if player has 7 points
+	// if player reached max points
 	if (score1 >= maxScore)
 	{
 		// stop the ball
 		ballSpeed = 0;
+
 		// write to the banner
 		document.getElementById('dir').innerHTML = "DETI wins!";
 		myAudio.pause();
-	    victory = new Audio('resources/audio/Jingle_Win_00.mp3');
+	    var victory = new Audio('resources/audio/Jingle_Win_00.mp3');
         victory.play();
 	}
-	// else if opponent has 7 points
+
+	// else if opponent reached max points
 	else if (score2 >= maxScore)
 	{
 		// stop the ball
 		ballSpeed = 0;
+
 		// write to the banner
 		document.getElementById('dir').innerHTML = "Evil wins!";
 		myAudio.pause();
-        lose = new Audio('resources/audio/Jingle_Lose_00.mp3');
+        var lose = new Audio('resources/audio/Jingle_Lose_00.mp3');
         lose.play();
 
 	}

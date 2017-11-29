@@ -1,6 +1,8 @@
 window.addEventListener('keyup', function(event) { Key.onKeyup(event); }, false);
 window.addEventListener('keydown', function(event) { Key.onKeydown(event); }, false);
 
+var started = false;
+
 var Key = {
   _pressed: {},
 
@@ -17,10 +19,11 @@ var Key = {
 
   onKeydown: function(event) {
     this._pressed[event.keyCode] = true;
-    if(event.keyCode==Key.SPACE)
+    if(event.keyCode === Key.SPACE && !started)
     {
         document.getElementById('Start').style.display = "none";
         draw();
+        started = true;
     }
   },
 
