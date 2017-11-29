@@ -1,3 +1,16 @@
+/*
+Trabalho Realizado por :
+Pedro Gusmão 77867
+Francisco Lopes 76406
+
+Referências:
+
+1 - https://codepen.io/Xanmia/pen/otAgz
+2 - https://appdevelopermagazine.com/538/2013/7/27/create-a-3d-pong-game-with-three.js-and-webgl/
+
+
+*/
+
 //GLOBAL VARIABLES
 
 var renderer, scene, camera, pointLight, spotLight;
@@ -472,11 +485,11 @@ function ballPhysics()
 // Handles CPU paddle movement and logic
 function opponentPaddleMovement()
 {
-	// Lerp towards the ball on the y plane
+	// Go towards the ball on the y plane
 	cpuPaddleDirY = (ball.position.y - cpuPaddle.position.y) * difficulty;
+	// Go towards the ball on z plane
 	cpuPaddleDirZ = (ball.position.z - cpuPaddle.position.z) * difficulty;
 
-	// in case the Lerp function produces a value above max paddle speed, we clamp it
 	if (Math.abs(cpuPaddleDirZ) <= paddleSpeed)
 	{
 	    if(cpuPaddle.position.z < fieldHeight * 0.5 - (paddleHeight/2) && cpuPaddleDirZ > 0)
@@ -489,19 +502,14 @@ function opponentPaddleMovement()
 	    }
 
 	}
-	// if the lerp value is too high, we have to limit speed to paddleSpeed
 	else
 	{
-		// if paddle is lerping in +ve direction
 		if (cpuPaddleDirZ > paddleSpeed)
 		{
 		    cpuPaddle.position.z += paddleSpeed;
-		    console.log(cpuPaddle.position.z + " and " + paddleHeight/2 + " z2")
 		}
-		// if paddle is lerping in -ve direction
 		else if (cpuPaddleDirZ < -paddleSpeed)
 		{
-		    console.log(cpuPaddle.position.z + " and " + paddleHeight/2 + " z3")
 		    cpuPaddle.position.z -= paddleSpeed;
 		}
 	}
