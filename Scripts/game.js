@@ -558,7 +558,6 @@ function playerPaddleMovement()
 		else
 		{
 			playerPaddleDirY = 0;
-			//playerPaddle.scale.z += (10 - playerPaddle.scale.z) * 0.2;
 		}
 	}
 	// move right
@@ -632,13 +631,8 @@ function playerPaddleMovement()
 		playerPaddle.rotation.y = 0;
 	}
 
-
-	playerPaddle.scale.y += (1 - playerPaddle.scale.y) * 0.2;
-	playerPaddle.scale.z += (1 - playerPaddle.scale.z) * 0.2;
 	playerPaddle.position.y += playerPaddleDirY;
 	playerPaddle.position.z += playerPaddleDirZ;
-	//console.log(playerPaddleDirY + " " + playerPaddleDirZ);
-	//console.log("comp" + fieldWidth * 0.45 + " " + playerPaddle.position.y + "c");
 }
 
 // Handles camera and lighting logic
@@ -647,8 +641,7 @@ function cameraPhysics()
 	// move to behind the player's paddle
 	camera.position.x = -290;
 	camera.position.y = (playerPaddle.position.y - camera.position.y) * 0.05;
-	camera.position.z = 65; // + 40 + 0.04;
-
+	camera.position.z = 65;
 
 	// rotate to face towards the opponent
 	camera.rotation.x = -0.01 * Math.PI/180;
@@ -657,28 +650,20 @@ function cameraPhysics()
 
 }
 
-
-
-
 // Handles paddle collision logic
 function paddlePhysics()
 {
 	// PLAYER PADDLE LOGIC
 
-	// if ball is aligned with playerPaddle on x plane
-	// remember the position is the CENTER of the object
-	// we only check between the front and the middle of the paddle (one-way collision)
 	if (ball.position.x <= playerPaddle.position.x + paddleDepth
 	&&  ball.position.x >= playerPaddle.position.x)
 	{
-		// and if ball is aligned with playerPaddle on y plane
 		if (ball.position.y <= playerPaddle.position.y + paddleWidth/2
 		&&  ball.position.y >= playerPaddle.position.y - paddleWidth/2)
 		{
 		    if (ball.position.z <= playerPaddle.position.z + paddleHeight/2
 		    && ball.position.z >= playerPaddle.position.z - paddleHeight/2)
 		    {
-		        // and if ball is travelling towards player (-ve direction)
                 if (ballDirX < 0)
                 {
                     ballDirX = -ballDirX;
@@ -700,7 +685,7 @@ function paddlePhysics()
                                     ballDirZ = -ballDirZ;
                                 }
                                 else {
-                                    ballDirZ = -ballDirZ + angle;
+                                    ballDirZ = -ballDirZ + angle*2;
                                 }
 
                             }
@@ -731,7 +716,7 @@ function paddlePhysics()
                                 }
                                 else
                                 {
-                                    ballDirZ = -ballDirZ - angle;
+                                    ballDirZ = -ballDirZ - angle*2;
                                 }
 
                             }
@@ -763,7 +748,7 @@ function paddlePhysics()
                                 }
                                 else
                                 {
-                                    ballDirY = -ballDirY + angle;
+                                    ballDirY = -ballDirY + angle*2;
                                 }
 
                             }
@@ -792,7 +777,7 @@ function paddlePhysics()
                             }
                             else
                             {
-                                ballDirY = -ballDirY - angle;
+                                ballDirY = -ballDirY - angle*2;
                             }
 
                         }
@@ -813,33 +798,22 @@ function paddlePhysics()
 
 	// OPPONENT BALL LOGIC
 
-	// if ball is aligned with cpuPaddle on x plane
-	// remember the position is the CENTER of the object
-	// we only check between the front and the middle of the paddle (one-way collision)
 	if (ball.position.x <= cpuPaddle.position.x + paddleDepth
 	&&  ball.position.x >= cpuPaddle.position.x)
 	{
-		// and if ball is aligned with cpuPaddle on y plane
 		if (ball.position.y <= cpuPaddle.position.y + paddleWidth/2
 		&&  ball.position.y >= cpuPaddle.position.y - paddleWidth/2)
 		{
 		    if (ball.position.z <= cpuPaddle.position.z + paddleHeight/2
 		    && ball.position.z >= cpuPaddle.position.z - paddleHeight/2)
 		    {
-                // and if ball is travelling towards opponent (+ve direction)
                 if (ballDirX > 0)
                 {
                     parts.push(new ExplodeAnimation(ball.position.x, ball.position.y,ball.position.z));
                     var boop = new Audio('resources/audio/Shoot_03.mp3');
                     boop.play();
-                    // stretch the paddle to indicate a hit
-                    //cpuPaddle.scale.y = 15;
-                    // switch direction of ball travel to create bounce
+
                     ballDirX = -ballDirX;
-                    // we impact ball angle when hitting it
-                    // this is not realistic physics, just spices up the gameplay
-                    // allows you to 'slice' the ball to beat the opponent
-                    //ballDirY -= cpuPaddleDirY * 0.7;
                 }
             }
 		}
@@ -848,7 +822,6 @@ function paddlePhysics()
 
 function resetBall(loser)
 {
-	// position the ball in the center of the table
 	ball.position.x = 0;
 	ball.position.y = 0;
 	ball.position.z = radius*10;
@@ -861,7 +834,7 @@ function resetBall(loser)
         // if player lost the last point, we send the ball to opponent
         if (loser === 1)
         {
-            ballDirX = -Math.random()+1;
+            ballDirX = -Math.random()-1;
         }
         // else if opponent lost, we send ball to player
         else
@@ -877,16 +850,14 @@ function resetBall(loser)
 
 }
 
-// checks if either player or opponent has reached 7 points
+// checks if either player or opponent has reached 5 points
 function matchScoreCheck()
 {
 	// if player reached max points
 	if (score1 >= maxScore)
 	{
-		// stop the ball
 		ballSpeed = 0;
 
-		// write to the banner
 		document.getElementById('dir').innerHTML = "DETI wins!";
 		myAudio.pause();
 	    var victory = new Audio('resources/audio/Jingle_Win_00.mp3');
@@ -896,10 +867,8 @@ function matchScoreCheck()
 	// else if opponent reached max points
 	else if (score2 >= maxScore)
 	{
-		// stop the ball
 		ballSpeed = 0;
 
-		// write to the banner
 		document.getElementById('dir').innerHTML = "Evil wins!";
 		myAudio.pause();
         var lose = new Audio('resources/audio/Jingle_Lose_00.mp3');
