@@ -26,7 +26,7 @@ var score1 = 0, score2 = 0;
 var maxScore = 5;
 
 // set opponent reflexes (0 - easiest, 1 - hardest)
-var difficulty = 0.5;
+var difficulty = 0.1;
 
 var myAudio = new Audio('resources/audio/core.mp3');
 
@@ -471,10 +471,13 @@ function opponentPaddleMovement()
 	// in case the Lerp function produces a value above max paddle speed, we clamp it
 	if (Math.abs(cpuPaddleDirZ) <= paddleSpeed)
 	{
-	    if(cpuPaddle.position.z < fieldHeight * 0.5 - (paddleHeight/2) && cpuPaddle.position.z > (paddleHeight/2))
+	    if(cpuPaddle.position.z < fieldHeight * 0.5 - (paddleHeight/2) && cpuPaddleDirZ > 0)
 	    {
 	        cpuPaddle.position.z += cpuPaddleDirZ;
-	        console.log(cpuPaddle.position.z + " and " + paddleHeight/2 + " z1")
+	    }
+	    if(cpuPaddle.position.z > (paddleHeight/2) && cpuPaddleDirZ < 0)
+	    {
+	        cpuPaddle.position.z += cpuPaddleDirZ;
 	    }
 
 	}
@@ -484,29 +487,25 @@ function opponentPaddleMovement()
 		// if paddle is lerping in +ve direction
 		if (cpuPaddleDirZ > paddleSpeed)
 		{
-		    if(cpuPaddle.position.z < fieldHeight * 0.5  - (paddleHeight/2) )
-		    {
-		        cpuPaddle.position.z += paddleSpeed;
-		        console.log(cpuPaddle.position.z + " and " + paddleHeight/2 + " z2")
-		    }
-
+		    cpuPaddle.position.z += paddleSpeed;
+		    console.log(cpuPaddle.position.z + " and " + paddleHeight/2 + " z2")
 		}
 		// if paddle is lerping in -ve direction
 		else if (cpuPaddleDirZ < -paddleSpeed)
 		{
-		    if(cpuPaddle.position.z > (paddleHeight/2))
-		    {
-		        console.log(cpuPaddle.position.z + " and " + paddleHeight/2 + " z3")
-		        cpuPaddle.position.z -= paddleSpeed;
-		    }
-
+		    console.log(cpuPaddle.position.z + " and " + paddleHeight/2 + " z3")
+		    cpuPaddle.position.z -= paddleSpeed;
 		}
 	}
 
 	// in case the Lerp function produces a value above max paddle speed, we clamp it
 	if (Math.abs(cpuPaddleDirY) <= paddleSpeed)
 	{
-	    if(cpuPaddle.position.y < fieldWidth/2 - (paddleWidth/2) && cpuPaddle.position.y > -fieldWidth/2 + paddleWidth/2)
+	    if(cpuPaddle.position.y < fieldWidth/2 - (paddleWidth/2) && cpuPaddleDirY > 0)
+	    {
+	        cpuPaddle.position.y += cpuPaddleDirY;
+	    }
+	    if(cpuPaddle.position.y > -fieldWidth/2 + paddleWidth/2 && cpuPaddleDirY < 0)
 	    {
 	        cpuPaddle.position.y += cpuPaddleDirY;
 	    }
@@ -517,20 +516,13 @@ function opponentPaddleMovement()
 		// if paddle is lerping in +ve direction
 		if (cpuPaddleDirY > paddleSpeed)
 		{
-		    if(cpuPaddle.position.y < fieldWidth/2 + (paddleWidth/2))
-		    {
-		        cpuPaddle.position.y += paddleSpeed;
-		    }
+		    cpuPaddle.position.y += paddleSpeed;
 
 		}
 		// if paddle is lerping in -ve direction
 		else if (cpuPaddleDirY < -paddleSpeed)
 		{
-		    if(cpuPaddle.position.y > -fieldWidth/2 + (paddleWidth/2))
-		    {
-		        cpuPaddle.position.y -= paddleSpeed;
-		    }
-
+		    cpuPaddle.position.y -= paddleSpeed;
 		}
 	}
 }
