@@ -3,21 +3,21 @@
 
 // scene object variables
 var renderer, scene, camera, pointLight, spotLight;
-var radius = 5;
 
 //rotation and collision angle
 var angle = 0.2;
 
-// field variables
-var fieldWidth = 400, fieldLength = 200, fieldHeight = 210;
+// field dimension variables
+var fieldLength = 400, fieldWidth = 200, fieldHeight = 210;
 
-// paddle variables
-var paddleWidth, paddleHeight, paddleDepth, paddleQuality;
-var paddle1DirY = 0, paddle1DirZ = 0, paddle2DirY = 0, paddle2DirZ = 0, paddleSpeed = 5;
+// paddle dimension, direction and speed variables
+var playerPaddle, cpuPaddle;
+var paddleDepth, paddleWidth, paddleHeight, paddleQuality;
+var playerPaddleDirY = 0, playerPaddleDirZ = 0, cpuPaddleDirY = 0, cpuPaddleDirZ = 0, paddleSpeed = 5;
 
 // ball variables
-var ball, paddle1, paddle2;
-var ballDirX = 1, ballDirY = 1, ballDirZ = 0.5, ballSpeed = 1.4;
+var ball;
+var ballDirX = 1, ballDirY = 1, ballDirZ = 0.5, ballSpeed = 0.4, radius = 5;
 
 // game-related variables
 var score1 = 0, score2 = 0;
@@ -95,20 +95,21 @@ function createScene()
 	c.appendChild(renderer.domElement);
 
 	// set up the playing surface plane
-	var barrierWidth = fieldWidth,
-		barrierLength = fieldLength,
+	var barrierLength = fieldLength,
+		barrierWidth = fieldWidth,
+        barrierDepth = 10,
 		barrierQuality = 50;
 
-	// create the paddle1's material
-	var paddle1Material =
+	// create the playerPaddle's material
+	var playerPaddleMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
 		  color: "darkgrey",
 		  opacity: 0.5,
 		  transparent: true
 		});
-	// create the paddle2's material
-	var paddle2Material =
+	// create the cpuPaddle's material
+	var cpuPaddleMaterial =
 	  new THREE.MeshLambertMaterial(
 		{
 		  map: THREE.ImageUtils.loadTexture('resources/textures/evilface.jpg')
@@ -124,9 +125,9 @@ function createScene()
 	var bottomBarrier = new THREE.Mesh(
 
 	  new THREE.CubeGeometry(
-		barrierWidth * 1.05,
-		barrierLength * 1.03,
-		10,
+		barrierLength * 1.05,
+		barrierWidth * 1.03,
+		barrierDepth,
 		barrierQuality,
 		barrierQuality,
 		1),
@@ -139,9 +140,9 @@ function createScene()
     var upperBarrier = new THREE.Mesh(
 
         new THREE.CubeGeometry(
-            barrierWidth * 1.05,
-            barrierLength * 1.03,
-            5,
+            barrierLength * 1.05,
+            barrierWidth * 1.03,
+            barrierDepth/2,
             barrierQuality,
             barrierQuality,
             1),
@@ -154,9 +155,9 @@ function createScene()
     var leftBarrier = new THREE.Mesh(
 
         new THREE.CubeGeometry(
-            barrierWidth * 1.05,
-            10,
-            100 + 20,
+            barrierLength * 1.05,
+            barrierDepth,
+            barrierWidth/2 + 20,
             barrierQuality,
             barrierQuality,
             1),
@@ -170,9 +171,9 @@ function createScene()
     var rightBarrier = new THREE.Mesh(
 
         new THREE.CubeGeometry(
-            barrierWidth * 1.05,
-            10,
-            100 + 20,
+            barrierLength * 1.05,
+            barrierDepth,
+            barrierWidth/2 + 20,
             barrierQuality,
             barrierQuality,
             1),
@@ -185,8 +186,7 @@ function createScene()
 
 	// // set up the sphere vars
 	// lower 'segment' and 'ring' values will increase performance
-	var radius = 5,
-		segments = 30,
+	var segments = 30,
 		rings = 30;
 
 	// // create the sphere's material
@@ -217,51 +217,51 @@ function createScene()
     ball.castShadow = true;
 
 	// // set up the paddle vars
-	paddleWidth = 5;
-	paddleHeight = 30;
-	paddleDepth = 20;
+	paddleDepth = 5;
+	paddleWidth = 30;
+	paddleHeight = 20;
 	paddleQuality = 1;
 
-	paddle1 = new THREE.Mesh(
+	playerPaddle = new THREE.Mesh(
 
 	  new THREE.CubeGeometry(
+		paddleDepth,
 		paddleWidth,
 		paddleHeight,
-		paddleDepth,
 		paddleQuality,
 		paddleQuality,
 		paddleQuality),
 
-	  paddle1Material);
+	  playerPaddleMaterial);
 
 	// // add the padle to the scene
-	scene.add(paddle1);
-	paddle1.receiveShadow = true;
-    paddle1.castShadow = true;
+	scene.add(playerPaddle);
+	playerPaddle.receiveShadow = true;
+    playerPaddle.castShadow = true;
 
-	paddle2 = new THREE.Mesh(
+	cpuPaddle = new THREE.Mesh(
 
 	  new THREE.CubeGeometry(
+		paddleDepth,
 		paddleWidth,
 		paddleHeight,
-		paddleDepth,
 		paddleQuality,
 		paddleQuality,
 		paddleQuality),
-	  paddle2Material);
+	  cpuPaddleMaterial);
 
 	// // add the padle to the scene
-	scene.add(paddle2);
-	paddle2.receiveShadow = true;
-    paddle2.castShadow = true;
+	scene.add(cpuPaddle);
+	cpuPaddle.receiveShadow = true;
+    cpuPaddle.castShadow = true;
 
 	// set paddles on each side of the table
-	paddle1.position.x = -fieldWidth/2 + paddleWidth;
-	paddle2.position.x = fieldWidth/2 - paddleWidth;
+	playerPaddle.position.x = -fieldLength/2 + paddleDepth;
+	cpuPaddle.position.x = fieldLength/2 - paddleDepth;
 
 	// lift paddles over playing surface
-	paddle1.position.z = paddleDepth;
-	paddle2.position.z = paddleDepth;
+	playerPaddle.position.z = paddleHeight;
+	cpuPaddle.position.z = paddleHeight;
 
 	// // create a point light
 	pointLight =
@@ -302,7 +302,7 @@ function createScene()
 
 
         var shader = THREE.ShaderLib["cube"];
-        shader.uniforms['tCube'].value = textureCube;   // textureCube has been init before
+        shader.uniforms['tCube'].value = textureCube;
         var material = new THREE.ShaderMaterial({
             fragmentShader: shader.fragmentShader,
             vertexShader: shader.vertexShader,
@@ -365,10 +365,9 @@ function ExplodeAnimation(x,y,z)
 }
 
 
-
+// draw scene
 function draw()
 {
-    // draw THREE.JS scene
     renderer.render(scene, camera);
     requestAnimationFrame(draw);
     ballPhysics();
@@ -386,9 +385,9 @@ function draw()
 function ballPhysics()
 {
 	// if ball goes off the 'left' side (Player's side)
-	if (ball.position.x <= -fieldWidth/2)
+	if (ball.position.x <= -fieldLength/2)
 	{
-	    expls = new Audio('resources/audio/Explosion_00.mp3');
+	    var expls = new Audio('resources/audio/Explosion_00.mp3');
         expls.play();
 		// CPU scores
 		score2++;
@@ -401,9 +400,9 @@ function ballPhysics()
 	}
 
 	// if ball goes off the 'right' side (CPU's side)
-	if (ball.position.x >= fieldWidth/2)
+	if (ball.position.x >= fieldLength/2)
 	{
-		point = new Audio('resources/audio/Collect_Point_01.mp3');
+		var point = new Audio('resources/audio/Collect_Point_01.mp3');
         point.play();
 		// Player scores
 		score1++;
@@ -415,17 +414,17 @@ function ballPhysics()
 	}
 
 	// if ball goes to the side (side of table)
-	if (ball.position.y-radius <= -fieldLength/2)
+	if (ball.position.y-radius <= -fieldWidth/2)
 	{
 		ballDirY = -ballDirY;
 	}
 	// if ball goes to the side (side of table)
-	if (ball.position.y+radius >= fieldLength/2)
+	if (ball.position.y+radius >= fieldWidth/2)
 	{
 		ballDirY = -ballDirY;
 	}
 
-	if (ball.position.z >= fieldHeight * 0.45 && ballDirZ > 0 )
+	if (ball.position.z >= fieldHeight * 0.45 + radius && ballDirZ > 0 )
 	{
         ballDirZ = -ballDirZ;
 	}
@@ -466,46 +465,46 @@ function ballPhysics()
 function opponentPaddleMovement()
 {
 	// Lerp towards the ball on the y plane
-	paddle2DirY = (ball.position.y - paddle2.position.y) * difficulty;
-	paddle2DirZ = (ball.position.z - paddle2.position.z) * difficulty;
+	cpuPaddleDirY = (ball.position.y - cpuPaddle.position.y) * difficulty;
+	cpuPaddleDirZ = (ball.position.z - cpuPaddle.position.z) * difficulty;
 
 	// in case the Lerp function produces a value above max paddle speed, we clamp it
-	if (Math.abs(paddle2DirZ) <= paddleSpeed)
+	if (Math.abs(cpuPaddleDirZ) <= paddleSpeed)
 	{
- 		paddle2.position.z += paddle2DirZ;
+ 		cpuPaddle.position.z += cpuPaddleDirZ;
 	}
 	// if the lerp value is too high, we have to limit speed to paddleSpeed
 	else
 	{
 		// if paddle is lerping in +ve direction
-		if (paddle2DirZ > paddleSpeed)
+		if (cpuPaddleDirZ > paddleSpeed)
 		{
-			paddle2.position.z += paddleSpeed;
+			cpuPaddle.position.z += paddleSpeed;
 		}
 		// if paddle is lerping in -ve direction
-		else if (paddle2DirZ < -paddleSpeed)
+		else if (cpuPaddleDirZ < -paddleSpeed)
 		{
-			paddle2.position.z -= paddleSpeed;
+			cpuPaddle.position.z -= paddleSpeed;
 		}
 	}
 
 	// in case the Lerp function produces a value above max paddle speed, we clamp it
-	if (Math.abs(paddle2DirY) <= paddleSpeed)
+	if (Math.abs(cpuPaddleDirY) <= paddleSpeed)
 	{
-		paddle2.position.y += paddle2DirY;
+		cpuPaddle.position.y += cpuPaddleDirY;
 	}
 	// if the lerp value is too high, we have to limit speed to paddleSpeed
 	else
 	{
 		// if paddle is lerping in +ve direction
-		if (paddle2DirY > paddleSpeed)
+		if (cpuPaddleDirY > paddleSpeed)
 		{
-			paddle2.position.y += paddleSpeed;
+			cpuPaddle.position.y += paddleSpeed;
 		}
 		// if paddle is lerping in -ve direction
-		else if (paddle2DirY < -paddleSpeed)
+		else if (cpuPaddleDirY < -paddleSpeed)
 		{
-			paddle2.position.y -= paddleSpeed;
+			cpuPaddle.position.y -= paddleSpeed;
 		}
 	}
 }
@@ -517,62 +516,62 @@ function playerPaddleMovement()
 	// move left
 	if (Key.isDown(Key.A))
 	{
-		paddle1.rotation.z = angle;
+		playerPaddle.rotation.z = angle;
 		// if paddle is not touching the side of table
 		if (Key.isDown(Key.SHIFT))
 		{
-		    paddle1DirY = 0;
+		    playerPaddleDirY = 0;
 		}
-		else if (paddle1.position.y < fieldLength * 0.45)
+		else if (playerPaddle.position.y < fieldWidth * 0.45)
 		{
-			paddle1DirY = paddleSpeed * 0.5;
+			playerPaddleDirY = paddleSpeed * 0.5;
 
 		}
 		// else we don't move and stretch the paddle
 		// to indicate we can't move
 		else
 		{
-			paddle1DirY = 0;
-			//paddle1.scale.z += (10 - paddle1.scale.z) * 0.2;
+			playerPaddleDirY = 0;
+			//playerPaddle.scale.z += (10 - playerPaddle.scale.z) * 0.2;
 		}
 	}
 	// move right
 	if (Key.isDown(Key.D))
 	{
-		paddle1.rotation.z = -angle;
+		playerPaddle.rotation.z = -angle;
 		// if paddle is not touching the side of table
 		// we move
 		if (Key.isDown(Key.SHIFT))
         {
-            paddle1DirY = 0;
+            playerPaddleDirY = 0;
         }
-		else if (paddle1.position.y > -fieldLength * 0.45)
+		else if (playerPaddle.position.y > -fieldWidth * 0.45)
 		{
-			paddle1DirY = -paddleSpeed * 0.5;
+			playerPaddleDirY = -paddleSpeed * 0.5;
 		}
 		// else we don't move and stretch the paddle
 		// to indicate we can't move
 		else
 		{
-			paddle1DirY = 0;
+			playerPaddleDirY = 0;
 		}
 	}
 	//move up
 	if (Key.isDown(Key.W))
 	{
-		paddle1.rotation.y = -angle;
+		playerPaddle.rotation.y = -angle;
 		if (Key.isDown(Key.SHIFT))
         {
-            paddle1DirZ = 0;
+            playerPaddleDirZ = 0;
         }
 
-		else if (paddle1.position.z < fieldHeight * 0.45)
+		else if (playerPaddle.position.z < fieldHeight * 0.45)
 		{
-			paddle1DirZ = paddleSpeed * 0.5;
+			playerPaddleDirZ = paddleSpeed * 0.5;
 		}
 		else
 		{
-			paddle1DirZ = 0;
+			playerPaddleDirZ = 0;
 		}
 
 
@@ -580,40 +579,40 @@ function playerPaddleMovement()
 	//move down
 	if (Key.isDown(Key.S))
 	{
-		paddle1.rotation.y = angle;
+		playerPaddle.rotation.y = angle;
 		if (Key.isDown(Key.SHIFT))
         {
-            paddle1DirZ = 0;
+            playerPaddleDirZ = 0;
         }
-		else if (paddle1.position.z > 11.45)
+		else if (playerPaddle.position.z > 11.45)
 		{
-			paddle1DirZ = -paddleSpeed * 0.5;
+			playerPaddleDirZ = -paddleSpeed * 0.5;
 		}
 		else
 		{
-			paddle1DirZ = 0;
+			playerPaddleDirZ = 0;
 		}
 	}
 
 
 	if(!Key.isDown(Key.A) && !Key.isDown(Key.D))
 	{
-		paddle1DirY = 0;
-		paddle1.rotation.z = 0;
+		playerPaddleDirY = 0;
+		playerPaddle.rotation.z = 0;
 	}
 	if(!Key.isDown(Key.W) && !Key.isDown(Key.S))
 	{
-		paddle1DirZ = 0;
-		paddle1.rotation.y = 0;
+		playerPaddleDirZ = 0;
+		playerPaddle.rotation.y = 0;
 	}
 
 
-	paddle1.scale.y += (1 - paddle1.scale.y) * 0.2;
-	paddle1.scale.z += (1 - paddle1.scale.z) * 0.2;
-	paddle1.position.y += paddle1DirY;
-	paddle1.position.z += paddle1DirZ;
-	//console.log(paddle1DirY + " " + paddle1DirZ);
-	//console.log("comp" + fieldLength * 0.45 + " " + paddle1.position.y + "c");
+	playerPaddle.scale.y += (1 - playerPaddle.scale.y) * 0.2;
+	playerPaddle.scale.z += (1 - playerPaddle.scale.z) * 0.2;
+	playerPaddle.position.y += playerPaddleDirY;
+	playerPaddle.position.z += playerPaddleDirZ;
+	//console.log(playerPaddleDirY + " " + playerPaddleDirZ);
+	//console.log("comp" + fieldWidth * 0.45 + " " + playerPaddle.position.y + "c");
 }
 
 // Handles camera and lighting logic
@@ -621,7 +620,7 @@ function cameraPhysics()
 {
 	// move to behind the player's paddle
 	camera.position.x = -290;
-	camera.position.y = (paddle1.position.y - camera.position.y) * 0.05;
+	camera.position.y = (playerPaddle.position.y - camera.position.y) * 0.05;
 	camera.position.z = 65; // + 40 + 0.04;
 
 
@@ -640,18 +639,18 @@ function paddlePhysics()
 {
 	// PLAYER PADDLE LOGIC
 
-	// if ball is aligned with paddle1 on x plane
+	// if ball is aligned with playerPaddle on x plane
 	// remember the position is the CENTER of the object
 	// we only check between the front and the middle of the paddle (one-way collision)
-	if (ball.position.x <= paddle1.position.x + paddleWidth
-	&&  ball.position.x >= paddle1.position.x)
+	if (ball.position.x <= playerPaddle.position.x + paddleDepth
+	&&  ball.position.x >= playerPaddle.position.x)
 	{
-		// and if ball is aligned with paddle1 on y plane
-		if (ball.position.y <= paddle1.position.y + paddleHeight/2
-		&&  ball.position.y >= paddle1.position.y - paddleHeight/2)
+		// and if ball is aligned with playerPaddle on y plane
+		if (ball.position.y <= playerPaddle.position.y + paddleWidth/2
+		&&  ball.position.y >= playerPaddle.position.y - paddleWidth/2)
 		{
-		    if (ball.position.z <= paddle1.position.z + paddleDepth/2
-		    && ball.position.z >= paddle1.position.z - paddleDepth/2)
+		    if (ball.position.z <= playerPaddle.position.z + paddleHeight/2
+		    && ball.position.z >= playerPaddle.position.z - paddleHeight/2)
 		    {
 		        // and if ball is travelling towards player (-ve direction)
                 if (ballDirX < 0)
@@ -661,11 +660,11 @@ function paddlePhysics()
                     beep.play();
                     parts.push(new ExplodeAnimation(ball.position.x, ball.position.y,ball.position.z));
                     //if paddle is turned up and ball higher than the table ground
-                    if (paddle1.rotation.y < 0 && ball.position.z > radius)
+                    if (playerPaddle.rotation.y < 0 && ball.position.z > radius)
                     {
                         if(ballDirZ<0) //ball going down
                         {
-                            if(paddle1DirZ > 0) //paddle is going up
+                            if(playerPaddleDirZ > 0) //paddle is going up
                             {
                                 ballDirZ = -ballDirZ + angle + 0.1; //strikes the ball with force and the ball goes up with more velocity
                             }
@@ -676,18 +675,18 @@ function paddlePhysics()
                         }
                         else //ball going up or z = 0
                         {
-                            if(paddle1DirZ > 0) //paddle is going up
+                            if(playerPaddleDirZ > 0) //paddle is going up
                             {
                                 ballDirZ = ballDirZ + angle + 0.1; //strikes the ball with force and the ball goes up with more velocity
                             }
                         }
                     }
                     //if paddle is turned down and ball higher than the table ground
-                    if (paddle1.rotation.y > 0 && ball.position.z > radius)
+                    if (playerPaddle.rotation.y > 0 && ball.position.z > radius)
                     {
                         if (ballDirZ>0) //ball going up
                         {
-                            if(paddle1DirZ < 0) //paddle is going down
+                            if(playerPaddleDirZ < 0) //paddle is going down
                             {
                                 ballDirZ = -ballDirZ - angle - 0.1; //strikes the ball with force and the ball goes down with more velocity
                             }
@@ -699,7 +698,7 @@ function paddlePhysics()
                         }
                         else //ball going down
                         {
-                            if(paddle1DirZ < 0) //paddle is going down
+                            if(playerPaddleDirZ < 0) //paddle is going down
                             {
                                 ballDirZ = ballDirZ - angle - 0.1;
                             }
@@ -707,11 +706,11 @@ function paddlePhysics()
                         }
                     }
                     //if paddle is turned left
-                    if (paddle1.rotation.z > 0)
+                    if (playerPaddle.rotation.z > 0)
                     {
                         if (ballDirY<0) //the ball is going right
                         {
-                            if(paddle1DirY > 0) //paddle is going left
+                            if(playerPaddleDirY > 0) //paddle is going left
                             {
                                 ballDirY = -ballDirY + angle + 0.1; //hard collision ball goes to the left with more velocity
                             }
@@ -722,7 +721,7 @@ function paddlePhysics()
                         }
                         else //the ball is going left or y = 0
                         {
-                            if(paddle1DirY > 0) //paddle is going left
+                            if(playerPaddleDirY > 0) //paddle is going left
                             {
                                 ballDirY = ballDirY + angle + 0.1;  //hard collision ball goes to the left with more velocity
                             }
@@ -730,11 +729,11 @@ function paddlePhysics()
 
                     }
                     //if paddle is turned right
-                    if (paddle1.rotation.z < 0)
+                    if (playerPaddle.rotation.z < 0)
                     {
                         if (ballDirY>0) //ball is going left
                         {
-                            if(paddle1DirY<0) //paddle is going right
+                            if(playerPaddleDirY<0) //paddle is going right
                             {
                                 ballDirY = -ballDirY - angle - 0.1;  //hard collision ball goes to the right with more velocity
                             }
@@ -745,7 +744,7 @@ function paddlePhysics()
                         }
                         else //ball goes right
                         {
-                            if(paddle1DirY <0) //paddle goes right
+                            if(playerPaddleDirY <0) //paddle goes right
                             {
                                 ballDirY = ballDirY - angle - 0.1;  //hard collision ball goes to the right with more velocity
                             }
@@ -760,15 +759,15 @@ function paddlePhysics()
 
 	// OPPONENT BALL LOGIC
 
-	// if ball is aligned with paddle2 on x plane
+	// if ball is aligned with cpuPaddle on x plane
 	// remember the position is the CENTER of the object
 	// we only check between the front and the middle of the paddle (one-way collision)
-	if (ball.position.x <= paddle2.position.x + paddleWidth
-	&&  ball.position.x >= paddle2.position.x)
+	if (ball.position.x <= cpuPaddle.position.x + paddleDepth
+	&&  ball.position.x >= cpuPaddle.position.x)
 	{
-		// and if ball is aligned with paddle2 on y plane
-		if (ball.position.y <= paddle2.position.y + paddleHeight/2
-		&&  ball.position.y >= paddle2.position.y - paddleHeight/2)
+		// and if ball is aligned with cpuPaddle on y plane
+		if (ball.position.y <= cpuPaddle.position.y + paddleWidth/2
+		&&  ball.position.y >= cpuPaddle.position.y - paddleWidth/2)
 		{
 			// and if ball is travelling towards opponent (+ve direction)
 			if (ballDirX > 0)
@@ -777,13 +776,13 @@ function paddlePhysics()
                 var boop = new Audio('resources/audio/Shoot_03.mp3');
                 boop.play();
 				// stretch the paddle to indicate a hit
-				//paddle2.scale.y = 15;
+				//cpuPaddle.scale.y = 15;
 				// switch direction of ball travel to create bounce
 				ballDirX = -ballDirX;
 				// we impact ball angle when hitting it
 				// this is not realistic physics, just spices up the gameplay
 				// allows you to 'slice' the ball to beat the opponent
-				//ballDirY -= paddle2DirY * 0.7;
+				//ballDirY -= cpuPaddleDirY * 0.7;
 			}
 		}
 	}
