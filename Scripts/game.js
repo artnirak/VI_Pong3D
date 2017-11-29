@@ -62,10 +62,10 @@ function createScene()
 	  height = 600;
 
 	// set some camera attributes
-	var view_angle = 90,
+	var fov = 90,
 	  aspect = width / height,
-	  near = 0.01,
-	  far = 1000000000000;
+	  near = 1,
+	  far = 10000;
 
 	var c = document.getElementById("gameCanvas");
 
@@ -74,7 +74,7 @@ function createScene()
 	renderer = new THREE.WebGLRenderer();
 	camera =
 	  new THREE.PerspectiveCamera(
-		view_angle,
+		fov,
 		aspect,
 		near,
 		far);
@@ -94,7 +94,7 @@ function createScene()
 	// attach the render-supplied DOM element
 	c.appendChild(renderer.domElement);
 
-	// set up the playing surface plane
+	// set up the playing field
 	var barrierLength = fieldLength,
 		barrierWidth = fieldWidth,
         barrierDepth = 10,
@@ -122,6 +122,18 @@ function createScene()
 		  map: THREE.ImageUtils.loadTexture('resources/textures/scifi2.jpg')
 		});
 
+    var barrierMaterialBottom =
+        new THREE.MeshLambertMaterial(
+            {
+                map: THREE.ImageUtils.loadTexture('resources/textures/scifi5.jpg')
+            });
+
+    var barrierMaterialUpper =
+        new THREE.MeshLambertMaterial(
+            {
+                map: THREE.ImageUtils.loadTexture('resources/textures/scifi1.jpg')
+            });
+
 	var bottomBarrier = new THREE.Mesh(
 
 	  new THREE.CubeGeometry(
@@ -132,7 +144,7 @@ function createScene()
 		barrierQuality,
 		1),
 
-	  barrierMaterial);
+	  barrierMaterialBottom);
 	bottomBarrier.position.z = -5;
 	scene.add(bottomBarrier);
 	bottomBarrier.receiveShadow = true;
@@ -147,7 +159,7 @@ function createScene()
             barrierQuality,
             1),
 
-        barrierMaterial);
+        barrierMaterialUpper);
     upperBarrier.position.z = 107.5;
     scene.add(upperBarrier);
     upperBarrier.receiveShadow = true;
@@ -277,7 +289,6 @@ function createScene()
 	scene.add(pointLight);
 
 	// add a spot light
-	// this is important for casting shadows
     spotLight = new THREE.SpotLight(0xF8D898);
     spotLight.position.set(-1000, 0, -100);
     spotLight.intensity = 1.5;
@@ -291,7 +302,7 @@ function createScene()
     }, false);
     myAudio.play();
 
-    // SKYBOX
+    // create a skybox
 
     var urlPrefix = "resources/skybox/";
 
