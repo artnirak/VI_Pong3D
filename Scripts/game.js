@@ -1,23 +1,21 @@
+//GLOBAL VARIABLES
 
-// ------- GLOBAL VARIABLES ------------
-
-// scene object variables
 var renderer, scene, camera, pointLight, spotLight;
 
 //rotation and collision angle
 var angle = 0.2;
 
-// field dimension variables
+//field dimension variables
 var fieldLength = 400, fieldWidth = 200, fieldHeight = 210;
 
-// paddle dimension, direction and speed variables
+//paddle dimension, direction and speed variables
 var playerPaddle, cpuPaddle;
 var paddleDepth, paddleWidth, paddleHeight, paddleQuality;
 var playerPaddleDirY = 0, playerPaddleDirZ = 0, cpuPaddleDirY = 0, cpuPaddleDirZ = 0, paddleSpeed = 5;
 
 // ball variables
 var ball;
-var ballDirX = 1, ballDirY = 1, ballDirZ = 0.5, ballSpeed = 1.4, radius = 5;
+var ballDirX = Math.random()+1, ballDirY = Math.random(), ballDirZ = Math.random(), ballSpeed = 1.5, radius = 5;
 
 //scores for player and cpu
 var score1 = 0, score2 = 0;
@@ -26,7 +24,7 @@ var score1 = 0, score2 = 0;
 var maxScore = 5;
 
 // set opponent reflexes (0 - easiest, 1 - hardest)
-var difficulty = 0.1;
+var difficulty = 0.15;
 
 var myAudio = new Audio('resources/audio/core.mp3');
 
@@ -40,7 +38,6 @@ var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
 var dirs = [];
 var parts = [];
 
-// ------- GAME FUNCTIONS --------------
 
 function setup()
 {
@@ -275,7 +272,7 @@ function createScene()
 	playerPaddle.position.z = paddleHeight;
 	cpuPaddle.position.z = paddleHeight;
 
-	// // create a point light
+	// create a point light
 	pointLight =
 	  new THREE.PointLight(0xF8D898);
 
@@ -697,8 +694,15 @@ function paddlePhysics()
                             {
                                 ballDirZ = -ballDirZ + angle + 0.1; //strikes the ball with force and the ball goes up with more velocity
                             }
-                            else {
-                                ballDirZ = -ballDirZ; //the paddle isn't moving
+                            else { //the paddle isn't moving
+                                if(ballDirZ<=-0.7)
+                                {
+                                    ballDirZ = -ballDirZ;
+                                }
+                                else {
+                                    ballDirZ = -ballDirZ + angle;
+                                }
+
                             }
 
                         }
@@ -721,7 +725,15 @@ function paddlePhysics()
                             }
                             else
                             {
-                                ballDirZ = -ballDirZ; //paddle isn't moving
+                                if (ballDirZ>=0.7) //paddle isn't moving
+                                {
+                                    ballDirZ = -ballDirZ;
+                                }
+                                else
+                                {
+                                    ballDirZ = -ballDirZ - angle;
+                                }
+
                             }
 
                         }
@@ -745,7 +757,15 @@ function paddlePhysics()
                             }
                             else
                             {
-                                ballDirY = -ballDirY; //paddle isn't moving
+                                if(ballDirY<=0.7) //paddle isn't moving
+                                {
+                                    ballDirY = -ballDirY;
+                                }
+                                else
+                                {
+                                    ballDirY = -ballDirY + angle;
+                                }
+
                             }
                         }
                         else //the ball is going left or y = 0
@@ -766,8 +786,13 @@ function paddlePhysics()
                             {
                                 ballDirY = -ballDirY - angle - 0.1;  //hard collision ball goes to the right with more velocity
                             }
-                            else {
-                                ballDirY = -ballDirY; //paddle isn't moving
+                            if(ballDirY>=0.7) //paddle isn't moving
+                            {
+                                ballDirY = -ballDirY;
+                            }
+                            else
+                            {
+                                ballDirY = -ballDirY - angle;
                             }
 
                         }
@@ -836,17 +861,17 @@ function resetBall(loser)
         // if player lost the last point, we send the ball to opponent
         if (loser === 1)
         {
-            ballDirX = -1;
+            ballDirX = -Math.random()+1;
         }
         // else if opponent lost, we send ball to player
         else
         {
-            ballDirX = 1;
+            ballDirX = Math.random()+1;
         }
 
         // set the ball to move +ve in y plane (towards left from the camera)
-        ballDirY = 1;
-        ballDirZ = 0.5;
+        ballDirY = Math.random();
+        ballDirZ = Math.random();
 
     }, 1000);
 
