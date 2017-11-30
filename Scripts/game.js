@@ -36,8 +36,8 @@ var score1 = 0, score2 = 0;
 // First to score 5 points wins the game
 var maxScore = 5;
 
-// set opponent reflexes (0 - easiest, 1 - hardest)
-var difficulty = 0.15;
+// set opponent reflex level
+var reflex_lvl = 0.0932;
 
 var myAudio = new Audio('resources/audio/core.mp3');
 
@@ -484,9 +484,9 @@ function ballPhysics()
 function opponentPaddleMovement()
 {
 	// Go towards the ball on the y plane
-	cpuPaddleDirY = (ball.position.y - cpuPaddle.position.y) * difficulty;
+	cpuPaddleDirY = (ball.position.y - cpuPaddle.position.y) * reflex_lvl;
 	// Go towards the ball on z plane
-	cpuPaddleDirZ = (ball.position.z - cpuPaddle.position.z) * difficulty;
+	cpuPaddleDirZ = (ball.position.z - cpuPaddle.position.z) * reflex_lvl;
 
 	if (Math.abs(cpuPaddleDirZ) <= paddleSpeed)
 	{
